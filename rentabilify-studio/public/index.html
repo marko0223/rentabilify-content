@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rentabilify Content Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+<style>
+:root{--o:#FF6B1A;--os:#FF8C47;--n:#0D1B2A;--n2:#142233;--n3:#1a2d42;--mu:#8A9BAD;--te:#00C2B2;--w:#FFF;--bd:rgba(255,107,26,0.18);}
+*{margin:0;padding:0;box-sizing:border-box;}html,body{height:100%;}
+body{background:var(--n);color:var(--w);font-family:'Montserrat','Arial',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;top:-20%;right:-10%;width:600px;height:600px;background:radial-gradient(circle,rgba(255,107,26,0.16) 0%,transparent 65%);pointer-events:none;z-index:0;}
+body::after{content:'';position:fixed;bottom:-20%;left:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(255,107,26,0.08) 0%,transparent 65%);pointer-events:none;z-index:0;}
+.app{display:flex;flex-direction:column;min-height:100vh;position:relative;z-index:1;}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:0.5px solid var(--bd);background:rgba(13,27,42,0.97);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
+.logo{font-size:19px;font-weight:700;}.logo span{color:var(--o);}
+.badge{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--te);border:0.5px solid var(--te);border-radius:20px;padding:2px 9px;margin-left:9px;}
+.tright{font-size:10px;color:var(--mu);}
+
+.main{display:flex;flex:1;min-height:0;}
+.left{width:420px;min-width:420px;border-right:0.5px solid var(--bd);overflow-y:auto;padding:20px 16px;}
+.right{flex:1;overflow-y:auto;padding:20px 20px;}
+
+.box{background:var(--n2);border:0.5px solid var(--bd);border-radius:12px;padding:14px 16px;}
+.lbl{font-size:9px;font-weight:700;color:var(--o);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:5px;}
+.sel{background:#080e18;border:0.5px solid rgba(255,107,26,0.2);border-radius:7px;color:var(--w);font-family:'Montserrat','Arial',sans-serif;font-size:11px;padding:6px 9px;outline:none;cursor:pointer;width:100%;}
+.btn-main{background:var(--o);color:var(--w);border:none;border-radius:9px;padding:11px 14px;font-family:'Montserrat','Arial',sans-serif;font-size:12px;font-weight:700;cursor:pointer;width:100%;transition:opacity 0.2s;}
+.btn-main:hover:not(:disabled){opacity:0.87;}.btn-main:disabled{opacity:0.4;cursor:not-allowed;}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;}
+.stat{background:var(--n2);border:0.5px solid var(--bd);border-radius:9px;padding:9px;text-align:center;}
+.stat .n{font-size:18px;font-weight:900;display:block;}.stat .l{font-size:7px;color:var(--mu);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;display:block;}
+
+.wk-lbl{font-size:8px;font-weight:700;color:var(--mu);letter-spacing:3px;text-transform:uppercase;margin:11px 0 6px;padding-bottom:5px;border-bottom:0.5px solid rgba(255,107,26,0.08);}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:5px;}
+.pc{background:var(--n2);border:0.5px solid rgba(255,255,255,0.04);border-radius:8px;padding:9px;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden;}
+.pc:hover{border-color:rgba(255,107,26,0.28);transform:translateY(-1px);background:var(--n3);}
+.pc.act{border-color:var(--o);background:var(--n3);}
+.pc.act::after{content:'✓';position:absolute;top:5px;right:6px;font-size:8px;font-weight:900;color:var(--o);}
+.pfmt{display:inline-block;font-size:7px;font-weight:700;padding:1px 6px;border-radius:20px;margin-bottom:5px;}
+.pt{font-size:10px;font-weight:700;line-height:1.3;margin-bottom:2px;}
+.ph{font-size:8px;font-weight:300;color:var(--mu);font-style:italic;line-height:1.3;}
+.pd{font-size:7px;font-weight:700;color:var(--mu);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;}
+
+.studio-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:500px;text-align:center;opacity:0.45;padding:40px;}
+.studio-empty .ico{font-size:52px;color:rgba(255,107,26,0.18);}
+.studio-empty p{font-size:12px;font-weight:300;color:var(--mu);margin-top:12px;line-height:1.8;}
+.sa{display:flex;flex-direction:column;gap:14px;}
+
+.chip{font-size:8px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(255,107,26,0.1);color:var(--os);border:0.5px solid rgba(255,107,26,0.2);display:inline-block;margin:0 3px 3px 0;}
+.chip.t{background:rgba(0,194,178,0.1);color:#00E5D4;border-color:rgba(0,194,178,0.2);}
+
+.lbar{height:2px;background:rgba(255,107,26,0.12);border-radius:2px;margin-top:10px;overflow:hidden;display:none;}
+.lbar.on{display:block;}
+.lbar-i{height:100%;background:var(--o);animation:lp 1.4s ease-in-out infinite;border-radius:2px;}
+@keyframes lp{0%{width:0%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0%;margin-left:100%}}
+.plog{background:#080e18;border-radius:7px;padding:8px 12px;margin-top:10px;max-height:90px;overflow-y:auto;display:none;}
+.plog.on{display:block;}
+.plog-i{font-size:10px;line-height:1.7;}
+.ebox{background:rgba(220,50,50,0.1);border:0.5px solid rgba(220,50,50,0.3);border-radius:8px;padding:10px 12px;margin-top:10px;font-size:10px;color:#ff7b7b;line-height:1.6;display:none;}
+.ebox.on{display:block;}
+
+.prev{background:var(--n2);border:0.5px solid var(--bd);border-radius:12px;overflow:hidden;display:none;}
+.prev.on{display:block;}
+.prev-bar{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:0.5px solid var(--bd);background:rgba(13,27,42,0.5);}
+.prev-lbl{font-size:9px;font-weight:700;color:var(--mu);letter-spacing:2px;text-transform:uppercase;}
+.prev-acts{display:flex;gap:6px;}
+.bdl{padding:5px 12px;border-radius:7px;font-family:'Montserrat','Arial',sans-serif;font-size:10px;font-weight:700;cursor:pointer;border:none;transition:opacity 0.18s;display:inline-flex;align-items:center;gap:4px;}
+.bdl:hover{opacity:0.85;}.bdl.sv{background:rgba(255,107,26,0.15);color:var(--o);border:0.5px solid rgba(255,107,26,0.3);}.bdl.pn{background:var(--o);color:var(--w);}
+
+.variants{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px;}
+.vcard{background:#080e18;border:1.5px solid rgba(255,107,26,0.12);border-radius:8px;overflow:hidden;cursor:pointer;transition:all 0.18s;}
+.vcard:hover{border-color:var(--o);transform:scale(1.01);}.vcard.sel{border-color:var(--o);box-shadow:0 0 0 2px rgba(255,107,26,0.2);}
+.vcard-top{padding:6px 8px;display:flex;justify-content:space-between;align-items:center;}
+.vcard svg{width:100%;height:auto;display:block;}
+.vcard-acts{display:flex;gap:5px;padding:6px 8px;}
+.vcard-acts button{flex:1;padding:5px;border-radius:5px;font-family:'Montserrat','Arial',sans-serif;font-size:9px;font-weight:700;cursor:pointer;border:none;}
+
+.carousel-wrap{padding:12px;display:flex;flex-direction:column;gap:10px;}
+.slide-row{display:flex;gap:10px;align-items:flex-start;}
+.slide-num{min-width:50px;font-size:8px;font-weight:700;color:var(--mu);padding-top:6px;text-align:center;}
+.slide-box{flex:1;background:#080e18;border:0.5px solid var(--te);border-radius:8px;overflow:hidden;}
+.slide-box svg{width:100%;height:auto;display:block;}
+.slide-acts{display:flex;gap:5px;padding:5px 8px;}
+.slide-acts button{flex:1;padding:5px;border-radius:5px;font-family:'Montserrat','Arial',sans-serif;font-size:9px;font-weight:700;cursor:pointer;border:none;}
+.slide-ph{padding:28px 20px;text-align:center;font-size:10px;color:var(--te);}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div class="logo">Rentabili<span>fy</span></div>
+    <span class="badge">Content Studio</span>
+  </div>
+  <div class="tright">Instagram · Claude AI · Sin configuración requerida</div>
+</div>
+
+<div class="main">
+<div class="left">
+  <div class="box" style="margin-bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div>
+      <label class="lbl">Mes</label>
+      <select class="sel" id="smon">
+        <option>Enero</option><option>Febrero</option><option>Marzo</option><option selected>Abril</option>
+        <option>Mayo</option><option>Junio</option><option>Julio</option><option>Agosto</option>
+        <option>Septiembre</option><option>Octubre</option><option>Noviembre</option><option>Diciembre</option>
+      </select>
+    </div>
+    <div style="display:flex;align-items:flex-end;">
+      <button class="btn-main" onclick="genPlan()" style="font-size:11px;padding:9px 12px;">⚡ Generar 30 posts</button>
+    </div>
+  </div>
+  <div class="stats" id="sts" style="display:none;">
+    <div class="stat"><span class="n" id="st" style="color:var(--o)">0</span><span class="l">Total</span></div>
+    <div class="stat"><span class="n" id="se" style="color:#FF6B1A">0</span><span class="l">Educ.</span></div>
+    <div class="stat"><span class="n" id="sp" style="color:#00C2B2">0</span><span class="l">Prod.</span></div>
+    <div class="stat"><span class="n" id="sh" style="color:#FFD166">0</span><span class="l">Humor</span></div>
+  </div>
+  <div id="wks"></div>
+  <div id="le" style="text-align:center;padding:40px 16px;color:var(--mu);">
+    <div style="font-size:44px;font-weight:900;color:rgba(255,107,26,0.08);">30</div>
+    <p style="font-size:12px;font-weight:300;margin-top:8px;line-height:1.7;">posts listos para generar.<br>Haz clic en <strong style="color:var(--o)">Generar 30 posts</strong>.</p>
+  </div>
+</div>
+
+<div class="right">
+  <div class="studio-empty" id="sempty">
+    <div class="ico">✦</div>
+    <p>Genera el plan y selecciona un post.<br><br>
+    <strong style="color:var(--o)">Claude genera el diseño SVG en tiempo real.</strong><br>
+    Sin API key. Descarga PNG máxima calidad.<br><br>
+    Estáticos → 3 variantes · Carruseles → todos los slides · Historias → 9:16</p>
+  </div>
+  <div class="sa" id="sa" style="display:none;">
+    <div class="box" id="pinfo"></div>
+    <div class="box">
+      <div class="lbl" style="margin-bottom:10px;">Opciones de generación</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div id="nvar-wrap">
+          <label class="lbl">Variantes</label>
+          <select class="sel" id="nvar">
+            <option value="1">1 variante</option>
+            <option value="3" selected>3 variantes ✦</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Fondo</label>
+          <select class="sel" id="bgsel">
+            <option value="auto">Auto (recomendado)</option>
+            <option value="navy-orange">Navy + nebula naranja</option>
+            <option value="orange-solid">Naranja sólido</option>
+            <option value="dark-minimal">Dark puro sin nebula</option>
+            <option value="texture-grain">Navy + textura grain</option>
+            <option value="split-diagonal">Split diagonal</option>
+            <option value="navy-teal">Navy + teal (integraciones)</option>
+            <option value="gradient-warm">Gradiente cálido</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Layout</label>
+          <select class="sel" id="lysel">
+            <option value="0">Izquierda</option>
+            <option value="1">Centrado</option>
+            <option value="2">Asimétrico</option>
+            <option value="3">Bottom-heavy</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-main" id="bgi" onclick="generate()" disabled>
+        <span id="bgitxt">Selecciona un post para generar</span>
+      </button>
+      <div class="lbar" id="lb"><div class="lbar-i"></div></div>
+      <div class="plog" id="pl"></div>
+      <div class="ebox" id="eb"></div>
+    </div>
+    <div class="prev" id="pv">
+      <div class="prev-bar">
+        <div class="prev-lbl" id="pvlbl">Preview</div>
+        <div class="prev-acts" id="pvacts"></div>
+      </div>
+      <div id="pvbody"></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────────────────
+const PC={Educación:{bg:'rgba(255,107,26,0.18)',text:'#FF8C47',dot:'#FF6B1A'},Producto:{bg:'rgba(0,194,178,0.15)',text:'#00E5D4',dot:'#00C2B2'},Humor:{bg:'rgba(255,209,102,0.15)',text:'#FFD166',dot:'#FFD166'},Noticias:{bg:'rgba(167,139,250,0.15)',text:'#A78BFA',dot:'#A78BFA'}};
+const FL={Carrusel:{bg:'rgba(255,107,26,0.2)',text:'#FF8C47'},Estático:{bg:'rgba(255,255,255,0.08)',text:'#FFF'},Historia:{bg:'rgba(0,194,178,0.2)',text:'#00E5D4'},Meme:{bg:'rgba(255,209,102,0.2)',text:'#FFD166'},Noticia:{bg:'rgba(167,139,250,0.2)',text:'#A78BFA'}};
+const DAYS=['Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+const BGMODES={
+  'navy-orange':{label:'Navy + nebula naranja',desc:(np,ns,nc)=>`<rect width="680" height="850" fill="#0D1B2A"/><defs><radialGradient id="nb1" ${np}><stop offset="0%" stop-color="${nc}" stop-opacity="0.30"/><stop offset="100%" stop-color="${nc}" stop-opacity="0"/></radialGradient><radialGradient id="nb2" cx="15%" cy="85%" r="45%"><stop offset="0%" stop-color="${nc}" stop-opacity="0.13"/><stop offset="100%" stop-color="${nc}" stop-opacity="0"/></radialGradient></defs><rect width="680" height="850" fill="url(#nb1)"/><rect width="680" height="850" fill="url(#nb2)"/>`},
+  'orange-solid':{label:'Naranja sólido',desc:()=>`<rect width="680" height="850" fill="#FF6B1A"/><defs><radialGradient id="nb1" cx="15%" cy="85%" r="45%"><stop offset="0%" stop-color="#0A1F3A" stop-opacity="0.35"/><stop offset="100%" stop-color="#0A1F3A" stop-opacity="0"/></radialGradient></defs><rect width="680" height="850" fill="url(#nb1)"/>`},
+  'dark-minimal':{label:'Dark puro',desc:()=>`<rect width="680" height="850" fill="#080E18"/>`},
+  'texture-grain':{label:'Navy + textura',desc:(np,ns,nc)=>`<rect width="680" height="850" fill="#0D1B2A"/><defs><pattern id="gr" patternUnits="userSpaceOnUse" width="8" height="8"><line x1="0" y1="8" x2="8" y2="0" stroke="#FFFFFF" stroke-width="0.3" stroke-opacity="0.04"/></pattern><radialGradient id="nb1" ${np}><stop offset="0%" stop-color="${nc}" stop-opacity="0.26"/><stop offset="100%" stop-color="${nc}" stop-opacity="0"/></radialGradient></defs><rect width="680" height="850" fill="url(#gr)"/><rect width="680" height="850" fill="url(#nb1)"/>`},
+  'split-diagonal':{label:'Split diagonal',desc:()=>`<rect width="680" height="850" fill="#0D1B2A"/><polygon points="340,0 680,0 680,420" fill="#1A0800" opacity="0.9"/><defs><radialGradient id="nb1" cx="60%" cy="35%" r="40%"><stop offset="0%" stop-color="#FF6B1A" stop-opacity="0.22"/><stop offset="100%" stop-color="#FF6B1A" stop-opacity="0"/></radialGradient></defs><rect width="680" height="850" fill="url(#nb1)"/><line x1="340" y1="0" x2="680" y2="420" stroke="#FF6B1A" stroke-width="0.8" stroke-opacity="0.3"/>`},
+  'navy-teal':{label:'Navy + teal',desc:(np,ns)=>`<rect width="680" height="850" fill="#0D1B2A"/><defs><radialGradient id="nb1" ${np}><stop offset="0%" stop-color="#00C2B2" stop-opacity="0.25"/><stop offset="100%" stop-color="#00C2B2" stop-opacity="0"/></radialGradient><radialGradient id="nb2" cx="85%" cy="80%" r="40%"><stop offset="0%" stop-color="#FF6B1A" stop-opacity="0.12"/><stop offset="100%" stop-color="#FF6B1A" stop-opacity="0"/></radialGradient></defs><rect width="680" height="850" fill="url(#nb1)"/><rect width="680" height="850" fill="url(#nb2)"/>`},
+  'gradient-warm':{label:'Gradiente cálido',desc:(np,ns,nc)=>`<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0D1B2A"/><stop offset="100%" stop-color="#0F0A00"/></linearGradient><radialGradient id="nb1" ${np}><stop offset="0%" stop-color="${nc}" stop-opacity="0.34"/><stop offset="100%" stop-color="${nc}" stop-opacity="0"/></radialGradient></defs><rect width="680" height="850" fill="url(#bg)"/><rect width="680" height="850" fill="url(#nb1)"/>`},
+};
+
+const NP=["cx='75%' cy='15%' r='55%'","cx='20%' cy='20%' r='50%'","cx='50%' cy='50%' r='42%'","cx='80%' cy='80%' r='50%'","cx='15%' cy='75%' r='48%'","cx='60%' cy='25%' r='45%'"];
+const NS=["blob circular amplio","blob alargado horizontal","blob compacto denso","blob difuso muy amplio","doble blob solapado"];
+const FP=["Georgia,serif","Georgia,serif","serif","Georgia,serif"];
+const NC={default:{c:'#FF6B1A'},shalom:{c:'#CC2222'},meta:{c:'#1877F2'},shopify:{c:'#96BF48'},aliclik:{c:'#E63946'},tiktok:{c:'#444'},generic:{c:'#00C2B2'}};
+const LAYOUTS=[
+  {id:'left',label:'Izquierda',desc:"Todo alineado izquierda. x=52. text-anchor='start'."},
+  {id:'center',label:'Centrado',desc:"Todo centrado. x=340. text-anchor='middle'."},
+  {id:'asym',label:'Asimétrico',desc:"Hook izquierda (x=52, max 280px). Dato/número enorme derecha (x=500, text-anchor='middle', font-size 110+)."},
+  {id:'bottom',label:'Bottom-heavy',desc:"30% superior vacío. Hook e impacto desde y=450. CTA en y=780+."},
+];
+
+const DB=[
+  {pi:'Educación',fo:'Estático',ti:'8% — el margen promedio COD en Latam',ho:'Vendes mucho. Ganas poco.',an:'Dato central grande: 8% de margen neto promedio COD. Frase: "Si no sabes tu margen real, estás adivinando tu negocio." Fórmula: Margen = (Precio - Costos totales) / Precio.',ct:'Síguenos para aprender a calcularlo',cp:'El 8% es el margen neto promedio COD en Latam 📊',ht:'#ecommerce #margenneto #COD'},
+  {pi:'Educación',fo:'Carrusel',ti:'El margen neto que nadie te enseña',ho:'¿Sabes cuánto ganas de verdad?',sl:7,an:'Desglose visual: Precio → (-) Costo producto → (-) Envío → (-) Rechazo → (-) Ads → (=) Ganancia real. Cada paso en un slide con número y descripción.',ct:'Guarda este carrusel',cp:'El número de Meta no es tu ganancia real 👇',ht:'#ecommerce #COD #rentabilidad'},
+  {pi:'Educación',fo:'Historia',ti:'5 errores que te cuestan dinero en COD',ho:'¿Cuál de estos estás cometiendo?',an:'Historia: 5 errores uno por uno. 1) ROAS de plataforma como métrica real. 2) Ignorar rechazos. 3) Sin break-even. 4) Escalar sin datos. 5) Precio sin considerar rechazo.',ct:'Desliza para ver todos',cp:'5 errores que destruyen negocios COD 👇',ht:'#errores #ecommerce #COD'},
+  {pi:'Educación',fo:'Estático',ti:'Tasa de rechazo: el número que te arruina',ho:'Si tu rechazo supera el 25%...',an:'Visual: 100 pedidos con 30% rechazo = 30 envíos pagados sin cobrar. Fórmula: Costo rechazo = Pedidos rechazados × (Envío + Costo producto). Mostrar ejemplo con números.',ct:'Calcula tu tasa ahora',cp:'La tasa de rechazo es el indicador más ignorado 💸',ht:'#rechazo #logistica #COD'},
+  {pi:'Educación',fo:'Carrusel',ti:'Break-even en COD con números reales',ho:'¿Sabes en qué pedido eres rentable?',sl:6,an:'S1 hook. S2: Qué es break-even. S3: Fórmula: BE = Costos fijos ÷ (Precio - Costo variable). S4: Ejemplo $300.000 ÷ ($45.000-$28.000) = 18 pedidos. S5: Cómo el rechazo sube el BE. S6: CTA.',ct:'Usa la calculadora de Rentabilify',cp:'El break-even es el número más importante 📈',ht:'#breakeven #finanzas #ecommerceCOD'},
+  {pi:'Educación',fo:'Estático',ti:'3 métricas que todo negocio COD debe medir',ho:'Sin estos 3 números, operas a ciegas.',an:'3 métricas en tarjetas: 1) Tasa entrega efectiva = entregados/enviados×100. 2) CPA real = inversión/pedidos cobrados. 3) Margen neto = (Precio-costos)/Precio. Fórmula de cada una.',ct:'¿Cuáles estás midiendo hoy?',cp:'Estos 3 números definen si eres rentable 📊',ht:'#metricas #COD #ecommerce'},
+  {pi:'Producto',fo:'Carrusel',ti:'Todo tu negocio en un solo lugar',ho:'¿Cuántas apps usas para subir un pedido?',sl:6,an:'S1 hook con caja naranja. S2: zona logos vacía para 5 apps actuales del usuario. S3: Módulo pedidos. S4: Módulo logística. S5: Módulo marketing. S6: CTA.',ct:'Pruébalo gratis — link en bio',cp:'Un solo lugar para todo tu negocio COD 🚀',ht:'#Rentabilify #ecommerce #COD'},
+  {pi:'Producto',fo:'Estático',ti:'Dashboard de rentabilidad en tiempo real',ho:'¿Ves tus números en tiempo real?',an:'Panel visual simulado con KPIs: Margen neto 12.4%, Pedidos hoy 47, Tasa entrega 74%, ROAS real 3.2×. Subtexto: Sin Excel. Sin adivinanzas.',ct:'Activa tu cuenta hoy',cp:'Tus KPIs reales, en tiempo real 📊',ht:'#dashboard #KPIs #Rentabilify'},
+  {pi:'Producto',fo:'Estático',ti:'ROAS real vs ROAS de plataforma',ho:'Meta dice 5×. La realidad dice otra cosa.',an:'Comparativa: columna izquierda "Meta dice" con 5.0× naranja grande. Columna derecha "Tu ROAS real" con 2.3× gris/muted. Diferencia = rechazos + devoluciones + logística.',ct:'Descubre tu ROAS real',cp:'Tu ROAS real no es el que te muestra Meta 📉',ht:'#ROAS #metaads #Rentabilify'},
+  {pi:'Producto',fo:'Historia',ti:'Así gestionas pedidos en Rentabilify',ho:'De lead a entregado — sin perder nada',an:'Historia 5 pasos: 1) Lead llega. 2) Asesor confirma. 3) Genera rótulo. 4) Tracking automático. 5) Entregado y cobrado. Cada paso visual.',ct:'Empieza gratis',cp:'El flujo de los negocios COD que escalan 👇',ht:'#Rentabilify #COD #gestion'},
+  {pi:'Producto',fo:'Estático',ti:'Multi-país. Multi-tienda. Una plataforma.',ho:'¿Vendes en más de un país?',an:'9 países Latam: Perú, Colombia, México, Chile, Ecuador, Guatemala, Honduras, El Salvador, Costa Rica. Moneda y tasa configurables. "Rentabilify entiende tu mercado."',ct:'Expande tu negocio',cp:'9 países de Latam ya disponibles 🌎',ht:'#multitienda #latinoamerica #Rentabilify'},
+  {pi:'Humor',fo:'Meme',ti:'Excel a las 2am revisando rentabilidad',ho:'El emprendedor COD a medianoche 😅',an:'Texto superior: "Cuando abres el Excel a las 2am para ver si ganaste o perdiste." Espacio central vacío. Texto inferior: "Rentabilify: ...o podrías verlo en tiempo real." Meme relatable.',ct:'Síguenos si te identificas',cp:'Por eso creamos Rentabilify 😂',ht:'#memesemprendedores #COD'},
+  {pi:'Humor',fo:'Meme',ti:'Animado en WhatsApp, fantasma en la puerta',ho:'El cliente que pide y rechaza el pedido',an:'Dos paneles. Izquierdo: "Cliente en WhatsApp:" + texto grande "SÍ LO QUIERO 🔥". Derecho: "Cliente cuando llega el repartidor:" + "¿Quién es? No pedí nada." Humor COD.',ct:'¿Te ha pasado hoy? Comenta 👇',cp:'El rechazo más doloroso no es el de amor 💀',ht:'#vendedorCOD #rechazo #meme'},
+  {pi:'Humor',fo:'Meme',ti:'Las apps que usas VS Rentabilify',ho:'¿Por qué hacer simple lo simple?',an:'Izquierda: 5-6 rectángulos con labels Excel, WhatsApp, App logística, Meta Ads, Hojas de cálculo, Otro más... con flechas caóticas. Derecha: un solo bloque "Rentabilify" con check.',ct:'Simplifica hoy. Link en bio.',cp:'Spoiler: solo necesitas una 😏',ht:'#productividad #ecommerce #tools'},
+  {pi:'Humor',fo:'Historia',ti:'Un día en la vida del vendedor COD',ho:'¿Te identificas? 🫠',an:'Historia 4 momentos: 8am Excel con fórmulas rotas. 12pm calculadora y papeles. 6pm 3 hojas abiertas. 10pm cierra todo sin entender. Conclusión: "O podrías usar Rentabilify."',ct:'Síguenos si así es tu día',cp:'Cada día igual hasta que descubres Rentabilify 😅',ht:'#humor #ecommerce #COD'},
+  {pi:'Noticias',fo:'Noticia',ti:'Integración oficial: Rentabilify + Shalom Pro',ho:'Sube pedidos directo desde Rentabilify',an:'Beneficio 1: Sube pedidos a Shalom sin salir de Rentabilify. Beneficio 2: Tracking automático en tu dashboard. Beneficio 3: Genera rótulos desde la plataforma.',ct:'Activa la integración desde tu cuenta',cp:'🔗 Rentabilify + Shalom Pro disponible.',ht:'#Shalom #Rentabilify #integracion',ip:'shalom'},
+  {pi:'Noticias',fo:'Noticia',ti:'Integración oficial: Rentabilify + Aliclik',ho:'Gestiona tus pedidos de Aliclik desde Rentabilify',an:'Beneficio 1: Sube pedidos a Aliclik sin doble digitación. Beneficio 2: Estados de Aliclik sincronizados en tiempo real en tu dashboard. Beneficio 3: Control unificado de logística y pedidos en un solo lugar.',ct:'Activa la integración con Aliclik hoy',cp:'🔗 Rentabilify + Aliclik. Gestión sin caos.',ht:'#Aliclik #Rentabilify #integracion',ip:'aliclik'},
+  {pi:'Noticias',fo:'Noticia',ti:'Rentabilify + Meta Ads: ROAS real',ho:'Ya conectado. Ya midiendo de verdad.',an:'Beneficio 1: Sincronización automática de campañas. Beneficio 2: ROAS con costos reales (rechazos, logística incluidos). Beneficio 3: Meta vs ROAS real en un dashboard.',ct:'Conecta tu cuenta de Meta hoy',cp:'🔗 ROAS real, no el inflado de Meta.',ht:'#MetaAds #Rentabilify #ROAS',ip:'meta'},
+  {pi:'Noticias',fo:'Noticia',ti:'Nueva integración: Rentabilify + Shopify',ho:'Tus leads llegan solos ahora',an:'Beneficio 1: Pedidos de Shopify llegan automáticamente a Rentabilify. Beneficio 2: Sincronización de productos e inventario. Beneficio 3: Sin copiar y pegar — cero errores.',ct:'Conecta tu tienda Shopify',cp:'🔗 Shopify + Rentabilify. Los pedidos llegan solos.',ht:'#Shopify #Rentabilify #ecommerce',ip:'shopify'},
+  {pi:'Educación',fo:'Historia',ti:'Cómo calcular el precio correcto en COD',ho:'El precio que pusiste está mal.',an:'Historia paso a paso: P1: Costo producto. P2: +Envío. P3: +% rechazo. P4: +Costos fijos. P5: +Margen ≥20%. Fórmula: Precio = Costo total × (1/(1-margen)).',ct:'Guarda esta fórmula',cp:'Si no calculaste así el precio, probablemente estás perdiendo 🎯',ht:'#precio #ecommerce #COD'},
+  {pi:'Noticias',fo:'Carrusel',ti:'Todo lo nuevo de Rentabilify este mes',ho:'Actualizaciones que pedían',sl:5,an:'S1 hook. S2: Nueva gestión de agencias con KPIs. S3: Dashboard renovado. S4: Nueva integración disponible. S5: CTA rentabilify.app.',ct:'Explora todo en rentabilify.app',cp:'Estuvimos trabajando fuerte 🛠️',ht:'#Rentabilify #actualizaciones'},
+  {pi:'Producto',fo:'Historia',ti:'Calculadora de break-even en Rentabilify',ho:'¿Cuánto necesitas vender para ganar?',an:'Historia flujo calculadora: ingresas costos fijos → precio y costo variable → resultado: "Necesitas 23 pedidos para ganar" → ajustado con tasa de rechazo real.',ct:'Pruébala gratis',cp:'Tu break-even en segundos 🔢',ht:'#breakeven #Rentabilify'},
+  {pi:'Educación',fo:'Carrusel',ti:'Cómo escalar un COD sin perder control',ho:'Escalar sin datos es un error muy caro',sl:7,an:'S1 hook. S2: 3 datos pre-escala (margen, tasa entrega, CPA real). S3: Alerta tasa rechazo sube. S4: Alerta CPA>precio. S5: Alerta margen<10%. S6: Checklist 5 puntos. S7: CTA.',ct:'Guarda este checklist',cp:'Antes de escalar, necesitas estos números 📊',ht:'#escalar #ecommerce #COD'},
+  {pi:'Humor',fo:'Meme',ti:'Tú en enero vs tú en diciembre',ho:'El glow-up del emprendedor COD',an:'Antes/después con línea divisoria. Enero: caos, Excel, adivinar. Diciembre: dashboard tiempo real, margen conocido, datos limpios. Frase: "La diferencia: dejar de adivinar y empezar a saber."',ct:'Empieza ese glow-up hoy.',cp:'De hojas de cálculo a datos reales 💪',ht:'#transformacion #Rentabilify'},
+  {pi:'Noticias',fo:'Historia',ti:'Rentabilify + TikTok Ads ya disponible',ho:'TikTok Shop + COD + datos reales',an:'Historia: Badge integración → ROAS real TikTok en Rentabilify → Compara Meta vs TikTok en un lugar → CTA.',ct:'Conecta TikTok Ads',cp:'🔗 TikTok Ads ya sincroniza con Rentabilify.',ht:'#TikTokAds #Rentabilify',ip:'tiktok'},
+  {pi:'Educación',fo:'Estático',ti:'¿Qué es el ROAS real y por qué importa?',ho:'Meta te miente. Estos son los números reales.',an:'ROAS plataforma = Ingresos reportados/Inversión. ROAS real = Ingresos pedidos COBRADOS/Inversión total. Ejemplo: Meta dice 4.5×. Real: 2.1×. La diferencia = rechazos + logística no contada.',ct:'Conoce tu ROAS real',cp:'Tu ROAS real puede ser la mitad del de Meta 📉',ht:'#ROAS #ecommerce #COD'},
+  {pi:'Producto',fo:'Estático',ti:'Comisiones automáticas para tu equipo',ho:'¿Sigues calculando comisiones a mano?',an:'Feature: esquema híbrido automático. Sueldo fijo + comisión por confirmación + comisión por entrega. Mostrar tabla visual de cómo se calcula. Rentabilify lo hace solo.',ct:'Activa el módulo de equipo',cp:'Deja de calcular comisiones a mano 📋',ht:'#comisiones #Rentabilify #equipo'},
+  {pi:'Humor',fo:'Historia',ti:'Tipos de clientes COD',ho:'¿Cuál es el peor? 🤔',an:'Historia 4 tipos: El entusiasta que rechaza, El que no contesta, El que negocia en la puerta, El que sí paga. Humor relatable con texto descriptivo de cada uno.',ct:'Etiqueta a ese cliente 👇',cp:'Los 4 tipos de clientes COD 😂',ht:'#humor #COD #clientes'},
+  {pi:'Educación',fo:'Estático',ti:'El costo real de cada devolución',ho:'¿Cuánto te cuesta cada rechazo?',an:'Desglose visual: Pedido rechazado = Costo envío ida + Costo envío vuelta + Costo producto deteriorado + Tiempo del equipo. Ejemplo con números: $8.000 rechazo sobre pedido de $35.000 = 23% del valor.',ct:'Reduce tus rechazos con Rentabilify',cp:'Cada rechazo no es solo una venta perdida 💸',ht:'#rechazos #COD #costos'},
+  {pi:'Producto',fo:'Carrusel',ti:'Integración Fenix G: pedidos sin salir de Rentabilify',ho:'¿Usas Fenix G para tus envíos?',sl:5,an:'S1 hook. S2: Crea guías desde Rentabilify. S3: Tracking automático en dashboard. S4: KPIs de efectividad de la agencia. S5: CTA.',ct:'Activa la integración con Fenix G',cp:'🔗 Rentabilify + Fenix G conectados.',ht:'#FenixG #Rentabilify #logistica'},
+];
+
+// ── STATE ──────────────────────────────────────────────────────────────
+let plan=[],sel=null,lastSVGs=[],selVar=0,curMode='idle';
+
+// ── PLAN GEN ───────────────────────────────────────────────────────────
+function genPlan(){
+  const month=document.getElementById('smon').value;
+  let pool=shuffle([...DB]);
+  plan=[];let i=0;
+  for(let w=1;w<=5;w++){
+    for(let d=0;d<6;d++){
+      if(plan.length>=30)break;
+      const p=pool[i%pool.length];i++;
+      const nc=p.ip?(NC[p.ip]||NC.default):NC.default;
+      const bgKeys=Object.keys(BGMODES);
+      plan.push({...p,week:w,day:DAYS[d],num:plan.length+1,month,
+        np:NP[(w*6+d)%NP.length],ns:NS[(w*3+d)%NS.length],
+        fp:FP[(w+d)%FP.length],nc,
+        autoBg:bgKeys[(w*3+d)%bgKeys.length],
+        layout:LAYOUTS[(w+d)%LAYOUTS.length]});
+    }
+  }
+  renderPlan();
+}
+
+function renderPlan(){
+  document.getElementById('le').style.display='none';
+  document.getElementById('sts').style.display='grid';
+  const c={Educación:0,Producto:0,Humor:0,Noticias:0};
+  plan.forEach(p=>{c[p.pi]=(c[p.pi]||0)+1;});
+  document.getElementById('st').textContent=plan.length;
+  document.getElementById('se').textContent=c['Educación']||0;
+  document.getElementById('sp').textContent=(c['Producto']||0)+(c['Noticias']||0);
+  document.getElementById('sh').textContent=c['Humor']||0;
+  let html='';
+  for(let w=1;w<=5;w++){
+    const wp=plan.filter(p=>p.week===w);if(!wp.length)break;
+    html+=`<div class="wk-lbl">Semana ${w} — ${wp[0].month}</div><div class="pgrid">`;
+    wp.forEach(p=>{
+      const pc2=PC[p.pi]||PC['Educación'],fc=FL[p.fo]||FL['Estático'];
+      html+=`<div class="pc" id="pc${p.num}" onclick="selPost(${p.num})" style="border-top:2px solid ${pc2.dot};">
+        <div class="pd">${p.day}</div>
+        <span class="pfmt" style="background:${fc.bg};color:${fc.text}">${p.fo}</span>
+        <div class="pt">${p.ti}</div>
+        <div class="ph">${p.ho}</div>
+      </div>`;
+    });
+    html+='</div>';
+  }
+  document.getElementById('wks').innerHTML=html;
+}
+
+function selPost(num){
+  document.querySelectorAll('.pc').forEach(c=>c.classList.remove('act'));
+  document.getElementById('pc'+num).classList.add('act');
+  sel=plan.find(p=>p.num===num);
+  lastSVGs=[];selVar=0;curMode='idle';
+  renderStudio();
+}
+
+function renderStudio(){
+  const p=sel;
+  document.getElementById('sempty').style.display='none';
+  document.getElementById('sa').style.display='flex';
+  const pc2=PC[p.pi]||PC['Educación'];
+  const isInt=p.pi==='Noticias';
+  const isCarousel=p.fo==='Carrusel';
+  const isHist=p.fo==='Historia';
+
+  document.getElementById('pinfo').innerHTML=`
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;">
+      <div><div style="font-size:16px;font-weight:900;line-height:1.2">${p.ti}</div>
+      <div style="font-size:9px;color:var(--mu);margin-top:2px">Post #${p.num} · Sem. ${p.week} · ${p.day} · ${p.fo}</div></div>
+      <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:${pc2.bg};color:${pc2.text};flex-shrink:0">${p.pi}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div><span class="lbl">Hook</span><p style="font-size:10px;font-style:italic;font-weight:600">"${p.ho}"</p></div>
+      <div><span class="lbl">CTA</span><p style="font-size:10px;font-weight:300;color:rgba(255,255,255,0.8)">${p.ct}</p></div>
+      <div style="grid-column:span 2"><span class="lbl">Ángulo</span><p style="font-size:10px;font-weight:300;color:rgba(255,255,255,0.75);line-height:1.5">${p.an.substring(0,160)}...</p></div>
+    </div>
+    <div>
+      <span class="chip" style="border-color:${p.nc.c}44">⬤ ${p.nc.c}</span>
+      <span class="chip">${p.autoBg}</span>
+      <span class="chip">${p.fp.split(',')[0]}</span>
+      <span class="chip">${p.layout.label}</span>
+      ${isInt?'<span class="chip t">🔗 Integración</span>':''}
+      ${isCarousel?`<span class="chip t">${p.sl} slides</span>`:''}
+      ${isHist?'<span class="chip t">9:16</span>':''}
+    </div>`;
+
+  const nvarW=document.getElementById('nvar-wrap');
+  nvarW.style.display=(isCarousel||isHist)?'none':'block';
+
+  if(isInt&&p.ip){
+    document.getElementById('bgsel').value='navy-teal';
+  }
+
+  document.getElementById('bgi').disabled=false;
+  document.getElementById('bgitxt').textContent=`✦ Generar ${isCarousel?`carrusel (${p.sl} slides)`:isHist?'historia 9:16':parseInt(document.getElementById('nvar').value)>1?`${document.getElementById('nvar').value} variantes`:'imagen'}`;
+  document.getElementById('pv').classList.remove('on');
+  document.getElementById('eb').classList.remove('on');
+  document.getElementById('pl').classList.remove('on');
+  document.getElementById('pl').innerHTML='';
+}
+
+// ── GENERATION ─────────────────────────────────────────────────────────
+async function generate(){
+  if(!sel)return;
+  const isCarousel=sel.fo==='Carrusel',isHist=sel.fo==='Historia';
+  const nvar=isCarousel||isHist?1:parseInt(document.getElementById('nvar').value);
+  const bgKey=document.getElementById('bgsel').value;
+  const lyIdx=parseInt(document.getElementById('lysel').value);
+
+  setLoad(true);lastSVGs=[];curMode='idle';
+  document.getElementById('pv').classList.remove('on');
+  document.getElementById('eb').classList.remove('on');
+
+  try{
+    if(isCarousel) await runCarousel(bgKey,lyIdx);
+    else await runStatic(nvar,bgKey,lyIdx,isHist);
+  }catch(e){showErr(e.message);}
+  setLoad(false);
+}
+
+function getBG(p,bgKey,varIdx){
+  const k=bgKey==='auto'?p.autoBg:bgKey;
+  const bgKeys=Object.keys(BGMODES);
+  const finalKey=bgKeys.includes(k)?k:bgKeys[0];
+  const npStr=`cx="${p.np.replace(/cx='|'/g,'').split(' ')[0].replace('cx=','')}' cy='${p.np.split("cy='")[1]?.split("'")[0]}%' r='${p.np.split("r='")[1]?.split("'")[0]}'`;
+  return {key:finalKey,svgBg:BGMODES[finalKey].desc(p.np,p.ns,p.nc.c)};
+}
+
+function buildPrompt(p,bgKey,bgSvg,layout,fp,isHist,vIdx,total){
+  const H=isHist?1209:850,vb=`0 0 680 ${H}`;
+  const isInt=p.pi==='Noticias'&&p.ip;
+  const varNote=total>1?`\nVARIANTE ${vIdx+1} DE ${total}: diseño DIFERENTE a las otras. Layout: ${layout.desc}. Fondo: ${bgKey}. Varía composición, tamaños y posición.\n`:'';
+  const intBlock=isInt?`
+LAYOUT INTEGRACIÓN:
+1. Badge: <rect rx="13" fill="rgba(0,194,178,0.12)" stroke="#00C2B2" stroke-width="0.6"/> + <text fill="#00E5D4" font-size="10" font-weight="700" letter-spacing="2" font-family="Arial,Helvetica,sans-serif">NUEVA INTEGRACIÓN</text>
+2. Hook con fuente contraste + subrayado naranja
+3. ZONA LOGOS (alto ~190px): <rect fill="#142233" rx="16" stroke="#00C2B2" stroke-opacity="0.2" stroke-width="0.8"/> — SOLO texto: "Rentabilify" izq bold blanco + "×" teal centro grande + plataforma der. Sin iconos.
+4. Divisor naranja
+5. BENEFICIOS: 3 puntos con <rect fill="#FF6B1A" width="4" rx="2"/> + Arial 700 15px blanco + 12px fill="#8A9BAD"
+6. CTA naranja suave`:'';
+
+  return `Genera SVG profesional para Instagram de Rentabilify. Devuelve SOLO el código SVG. Sin markdown. Sin explicaciones. Empieza con <svg.
+${varNote}
+CANVAS: viewBox="${vb}" width="680" height="${H}" xmlns="http://www.w3.org/2000/svg"
+FUENTES: Solo fuentes del sistema. NO Google Fonts. NO @import.
+- Principal: font-family="Arial,Helvetica,sans-serif"
+- Contraste: font-family="${fp}"
+
+FONDO (insertar tal cual como elementos SVG dentro del canvas):
+${bgSvg}
+
+LAYOUT: ${layout.desc}
+
+TIPOGRAFÍA:
+— Etiqueta: Arial font-size="10" font-weight="700" fill="#FF6B1A" letter-spacing="2.5" (opcional, MAYÚSCULAS)
+— Intro: Arial font-size="26" font-weight="300" fill="#FFFFFF" opacity="0.72"
+— HOOK "${p.ho}": font-family="${fp}" font-style="italic" font-size="52-68" font-weight="700" fill="#FFFFFF"
+— Subrayado hook: <path stroke="#FF6B1A" stroke-width="2.4" fill="none" stroke-linecap="round" d="M [x] [y] C [puntos curva suave]"/>
+— Caja énfasis: <rect fill="#FF6B1A" rx="6"/> + Arial font-weight="900" fill="#FFFFFF"
+${intBlock}
+CUERPO — ángulo: ${p.an}
+${!isInt?`— Máx 3 puntos: <rect fill="#FF6B1A" width="4" rx="2"/> + Arial 700 15px blanco + 12px fill="#8A9BAD"
+— Divisor: <line stroke="#FF6B1A" stroke-width="0.5" stroke-opacity="0.28"/>
+— Datos numéricos grandes (48-72px) en naranja`:''}
+
+CTA: Arial font-weight="700" font-size="19" fill="#FF8C47" — "${p.ct}"
+FLECHA CTA: <path> línea + V stroke="#FF8C47" stroke-width="2.4" fill="none" stroke-linecap="round"
+
+LOGO (esquina inferior derecha siempre):
+<text x="628" y="${H-26}" text-anchor="end" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700"><tspan fill="${bgKey==='orange-solid'?'#0D1B2A':'#FFFFFF'}">Rentabili</tspan><tspan fill="${bgKey==='orange-solid'?'#0D1B2A':'#FF6B1A'}">fy</tspan></text>
+
+REGLAS: fill="none" en paths · x≥52 padding · font-family/size/fill en cada text · sin clipPath/mask/filter · SVG completo y válido · espacio generoso`;
+}
+
+function buildSlidePrompt(p,idx,total,slidePlan,bgKey,bgSvg,fp){
+  const s=slidePlan[idx];
+  const isFirst=s.role==='hook',isLast=s.role==='cta';
+  return `SVG slide ${idx+1}/${total} carrusel Instagram Rentabilify. SOLO SVG, empieza con <svg.
+
+SLIDE ${idx+1}/${total} — ${s.role.toUpperCase()}: ${s.title}
+CONTENIDO: ${s.content}
+TEMA: ${p.ti}
+
+CANVAS: viewBox="0 0 680 850" width="680" height="850" xmlns="http://www.w3.org/2000/svg"
+FUENTES SISTEMA (sin @import, sin Google Fonts):
+- Principal: Arial,Helvetica,sans-serif
+- Contraste: ${fp}
+
+${isLast?`FONDO: <rect width="680" height="850" fill="#FF6B1A"/>`:`FONDO:\n${bgSvg}\nNEBULA se desplaza: slide ${idx+1} la nebula está más hacia la ${idx%2===0?'derecha':'izquierda'} que en slide anterior.`}
+
+${isFirst?`SLIDE HOOK:
+— Número "01": Arial font-size="13" font-weight="700" fill="#FF6B1A" letter-spacing="2" x="52" y="80"
+— Intro Arial 300 26px fill="#FFFFFF" opacity="0.70"
+— "${p.ho}" en ${fp} italic 54-68px font-weight="700" fill="#FFFFFF"
+— Subrayado curvo: path stroke="#FF6B1A" stroke-width="2.4" fill="none" stroke-linecap="round"
+— Caja naranja con dato/respuesta clave`
+:isLast?`SLIDE CTA:
+— Número "0${idx+1}": Arial font-size="13" fill="rgba(255,255,255,0.6)" x="52" y="80"
+— Texto acción Arial 900 48-62px fill="#FFFFFF": "${p.ct}"
+— Subtexto Arial 300 18px fill="rgba(255,255,255,0.82)": rentabilify.app
+— Logo blanco/transparente`
+:`SLIDE CUERPO:
+— Número "0${idx+1}": Arial font-size="13" fill="#FF6B1A" letter-spacing="2" x="52" y="72"
+— Título Arial 700 20-24px fill="#FFFFFF": "${s.title}"
+— ${s.content}
+— 1 frase clave en ${fp} italic + subrayado naranja curvo
+— Espacio generoso`}
+
+LOGO: <text x="628" y="824" text-anchor="end" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700"><tspan fill="${isLast?'rgba(255,255,255,0.7)':'#FFFFFF'}">Rentabili</tspan><tspan fill="${isLast?'rgba(255,255,255,0.9)':'#FF6B1A'}">fy</tspan></text>
+
+REGLAS: fill="none" en paths · x≥52 · font-family/size/fill explícitos · sin clipPath/filter · SVG válido`;
+}
+
+async function callClaude(prompt){
+  const r=await fetch('/api/claude',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4500,messages:[{role:'user',content:prompt}]})
+  });
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||`Error ${r.status}`);}
+  const d=await r.json();
+  let t=(d.content?.[0]?.text||'').trim().replace(/```svg|```xml|```/g,'').trim();
+  if(!t.includes('<svg'))return null;
+  t=t.substring(t.indexOf('<svg'));
+  if(t.includes('</svg>'))t=t.substring(0,t.lastIndexOf('</svg>')+6);
+  return t;
+}
+
+function buildSlidePlan(p,n){
+  const slides=[{num:1,role:'hook',title:'Hook',content:`Hook: "${p.ho}". Máximo impacto. Caja naranja con dato clave.`}];
+  const parts=p.an.split(/[.]/g).map(s=>s.trim()).filter(s=>s.length>12).slice(0,n-2);
+  for(let i=0;i<n-2;i++) slides.push({num:i+2,role:'body',title:`Punto ${i+1}`,content:parts[i]||`Aspecto clave ${i+1} de: ${p.ti}`});
+  slides.push({num:n,role:'cta',title:'CTA',content:p.ct});
+  return slides;
+}
+
+async function runStatic(nvar,bgKey,lyIdx,isHist){
+  const svgs=[];
+  const bgKeys=Object.keys(BGMODES);
+  for(let v=0;v<nvar;v++){
+    const vBgKey=nvar>1?bgKeys[v%bgKeys.length]:(bgKey==='auto'?sel.autoBg:bgKey);
+    const bgSvg=BGMODES[vBgKey].desc(sel.np,sel.ns,sel.nc.c);
+    const layout=LAYOUTS[v%LAYOUTS.length];
+    log(`Generando${nvar>1?` variante ${v+1}/${nvar}`:''}...`,'cur');
+    const prompt=buildPrompt(sel,vBgKey,bgSvg,layout,sel.fp,isHist,v,nvar);
+    const svg=await callClaude(prompt);
+    if(!svg)throw new Error(`Variante ${v+1}: sin SVG válido.`);
+    svgs.push({svg,bgKey:vBgKey,layout:layout.label});
+    log(`✓ ${nvar>1?`Variante ${v+1}`:'Imagen'} lista`,'done');
+    lastSVGs=[...svgs];
+  }
+  curMode=nvar>1?'variants':'single';selVar=0;
+  renderResults(isHist);
+}
+
+async function runCarousel(bgKey,lyIdx){
+  const slides=sel.sl||6;
+  const slidePlan=buildSlidePlan(sel,slides);
+  const vBgKey=bgKey==='auto'?sel.autoBg:bgKey;
+  const bgSvg=BGMODES[vBgKey]?.desc(sel.np,sel.ns,sel.nc.c)||BGMODES['navy-orange'].desc(sel.np,sel.ns,sel.nc.c);
+  curMode='carousel';
+  lastSVGs=[];
+  renderResults(false);
+  for(let i=0;i<slides;i++){
+    log(`Slide ${i+1}/${slides}: ${slidePlan[i].title}`,'cur');
+    const prompt=buildSlidePrompt(sel,i,slides,slidePlan,vBgKey,bgSvg,sel.fp);
+    const svg=await callClaude(prompt);
+    if(!svg)throw new Error(`Slide ${i+1}: sin SVG válido.`);
+    lastSVGs=[...lastSVGs,{svg,title:slidePlan[i].title,role:slidePlan[i].role}];
+    log(`✓ Slide ${i+1} listo`,'done');
+    renderResults(false);
+  }
+}
+
+function renderResults(isHist){
+  const pv=document.getElementById('pv');
+  pv.classList.add('on');
+  const pvlbl=document.getElementById('pvlbl');
+  const pvacts=document.getElementById('pvacts');
+  const pvbody=document.getElementById('pvbody');
+
+  if(curMode==='variants'){
+    pvlbl.textContent=`${lastSVGs.length} variantes — elige la mejor`;
+    pvacts.innerHTML='';
+    let html=`<div class="variants">`;
+    lastSVGs.forEach((r,i)=>{
+      html+=`<div class="vcard ${i===selVar?'sel':''}" id="vc${i}" onclick="selectVar(${i})">
+        <div class="vcard-top">
+          <span style="font-size:8px;font-weight:700;color:${i===selVar?'var(--o)':'var(--mu)'};letter-spacing:1.5px;text-transform:uppercase">Variante ${i+1} ${i===selVar?'✓':''}</span>
+          <span style="font-size:8px;color:var(--mu)">${r.bgKey}</span>
+        </div>
+        ${r.svg}
+        <div class="vcard-acts">
+          <button onclick="event.stopPropagation();dlSVG(${i})" style="background:rgba(255,107,26,0.15);color:var(--o)">↓ SVG</button>
+          <button onclick="event.stopPropagation();dlPNG(${i},${isHist})" style="background:var(--o);color:var(--w)">↓ PNG</button>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+    pvbody.innerHTML=html;
+  }
+  else if(curMode==='single'&&lastSVGs[0]){
+    pvlbl.textContent='Preview';
+    pvacts.innerHTML=`<button class="bdl sv" onclick="dlSVG(0)">↓ SVG</button><button class="bdl pn" onclick="dlPNG(0,${isHist})">↓ PNG ${isHist?'1080×1920':'1080×1350'}</button>`;
+    pvbody.innerHTML=`<div style="padding:12px;background:rgba(0,0,0,0.2);display:flex;justify-content:center">${lastSVGs[0].svg}</div>`;
+  }
+  else if(curMode==='carousel'){
+    const total=sel.sl||6;
+    pvlbl.textContent=`Carrusel — ${lastSVGs.length}/${total} slides`;
+    pvacts.innerHTML=lastSVGs.length===total?`<button class="bdl sv" onclick="dlAllSVG()">↓ Todos SVG</button><button class="bdl pn" onclick="dlAllPNG()">↓ Todos PNG</button>`:'';
+    let html=`<div class="carousel-wrap">`;
+    lastSVGs.forEach((r,i)=>{
+      html+=`<div class="slide-row">
+        <div class="slide-num">Slide ${i+1}<br><span style="color:var(--te);font-size:7px">✓</span></div>
+        <div class="slide-box">
+          ${r.svg}
+          <div class="slide-acts">
+            <button onclick="dlSVG(${i})" style="background:rgba(255,107,26,0.15);color:var(--o)">↓ SVG</button>
+            <button onclick="dlPNG(${i},false)" style="background:var(--o);color:var(--w)">↓ PNG</button>
+          </div>
+        </div>
+      </div>`;
+    });
+    if(lastSVGs.length<total){
+      for(let i=lastSVGs.length;i<total;i++){
+        html+=`<div class="slide-row">
+          <div class="slide-num">Slide ${i+1}</div>
+          <div class="slide-box"><div class="slide-ph">Generando...</div></div>
+        </div>`;
+      }
+    }
+    html+='</div>';
+    pvbody.innerHTML=html;
+  }
+
+  pv.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function selectVar(i){selVar=i;renderResults(sel.fo==='Historia');}
+
+// ── DOWNLOAD ───────────────────────────────────────────────────────────
+function dlSVG(i){
+  const r=lastSVGs[i];if(!r)return;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([r.svg],{type:'image/svg+xml'}));
+  a.download=`rentabilify_post${sel.num}_${curMode==='carousel'?`slide${i+1}`:curMode==='variants'?`v${i+1}`:''}${sel.pi.toLowerCase()}.svg`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+function dlPNG(i,isHist){
+  const r=lastSVGs[i];if(!r)return;
+  const W=1080,H=isHist?1920:1350,SCALE=2;
+  const blob=new Blob([r.svg],{type:'image/svg+xml;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const img=new Image();
+  img.onload=()=>{
+    const c=document.createElement('canvas');c.width=W*SCALE;c.height=H*SCALE;
+    const ctx=c.getContext('2d');
+    ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+    ctx.drawImage(img,0,0,W*SCALE,H*SCALE);
+    URL.revokeObjectURL(url);
+    c.toBlob(b=>{
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(b);
+      a.download=`rentabilify_post${sel.num}_${curMode==='carousel'?`slide${i+1}`:curMode==='variants'?`v${i+1}`:''}${sel.pi.toLowerCase()}.png`;
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+    },'image/png',1.0);
+  };
+  img.onerror=()=>URL.revokeObjectURL(url);
+  img.src=url;
+}
+
+function dlAllSVG(){lastSVGs.forEach((_,i)=>setTimeout(()=>dlSVG(i),i*300));}
+async function dlAllPNG(){
+  for(let i=0;i<lastSVGs.length;i++){
+    dlPNG(i,false);
+    await new Promise(r=>setTimeout(r,600));
+  }
+}
+
+// ── UI HELPERS ─────────────────────────────────────────────────────────
+function setLoad(on){
+  document.getElementById('bgi').disabled=on;
+  document.getElementById('bgitxt').textContent=on?'Claude generando...':'✦ Generar imagen';
+  document.getElementById('lb').className=on?'lbar on':'lbar';
+  if(!on){document.getElementById('pl').classList.remove('on');}
+}
+function log(msg,type){
+  const pl=document.getElementById('pl');pl.classList.add('on');
+  pl.querySelectorAll('.plog-i.cur').forEach(e=>{e.classList.remove('cur');e.style.color='var(--te)';});
+  const d=document.createElement('div');
+  d.className=`plog-i ${type}`;
+  d.style.color=type==='cur'?'var(--w)':type==='done'?'var(--te)':'var(--mu)';
+  d.textContent=msg;pl.appendChild(d);pl.scrollTop=pl.scrollHeight;
+}
+function showErr(m){const b=document.getElementById('eb');b.textContent=m;b.className='ebox on';}
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "rentabilify-content-studio",
+  "version": "1.0.0",
+  "description": "Rentabilify Content Studio — generador de contenido para Instagram con IA",
+  "engines": {
+    "node": "18.x"
+  }
+}
