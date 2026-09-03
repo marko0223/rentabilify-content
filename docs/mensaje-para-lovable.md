@@ -3,6 +3,7 @@
 **Proyecto:** `rentabilify` (`f07cabe8-35ce-4164-b1b0-1daca62e1ba1`)
 **Recomendación:** enviarlo primero en **modo plan** (sin editar código) para ver qué propone, y recién después aprobar la ejecución.
 **Alcance:** solo el bot de confirmación. **Cero cambios en rompevistos.**
+**Clave:** el punto 0 obliga a *reescribir y consolidar* las instrucciones, no a apilar más encima.
 
 ---
 
@@ -17,6 +18,41 @@
 Están funcionando y reviven leads. Cualquier cambio ahí —incluido cambiar el texto de una plantilla, su `activo`, su `orden` o su `producto_id`— rompe algo que hoy da resultado. Si crees que un problema se resuelve tocando un rompevisto, **no lo toques: descríbelo en tu respuesta y déjalo pendiente.**
 
 Todo lo que sigue se resuelve en el bot: `crm-ai-autoresponder`, `_shared/promptBuilder.ts`, `crm-process-incoming`, `whatsapp-webhook` y `crm_bot_settings`.
+
+---
+
+### 0. ANTES DE AÑADIR NADA: consolidar lo que ya existe
+
+Esto es condición previa a todo lo demás. **No agregues ni una sola instrucción nueva encima de las que ya hay.** Hoy las instrucciones del bot están repartidas en al menos 8 fuentes que suman más de 31.000 caracteres y se contradicen entre sí:
+
+| Fuente | Tamaño |
+|---|---|
+| `crm_bot_settings.ai_system_prompt` | 22.304 caracteres, 160 líneas |
+| `crm_ai_prompts` | 4 filas, 7.058 caracteres |
+| `crm_bot_modules` | 3 filas, 2.162 caracteres |
+| `reglas_obligatorias` / `reglas_prohibidas` | campos sueltos |
+| `prompt_config` (toggles) | JSON |
+| Textos fijos en `crm-ai-autoresponder` y `_shared/promptBuilder.ts` | en código |
+
+Solo en `ai_system_prompt` ya hay **16 reglas negativas** («NUNCA», «Prohibido», «JAMÁS») y **8 imperativas** («SIEMPRE», «DEBES», «OBLIGATORIO»). Añadir diez más encima garantiza que se choquen y que el bot elija cuál obedecer al azar — que es exactamente lo que se ve en los chats: el mismo caso resuelto bien en un chat y mal en otro.
+
+**Ejemplo confirmado de contradicción:** «envío gratis / envío incluido» aparece **4 veces dentro de `ai_system_prompt`**, mientras `adelanto_agencia` cobra S/20 de flete. Si le agrego la regla «no digas envío gratis en agencia» sin borrar esas 4, quedan dos instrucciones opuestas compitiendo.
+
+**Lo que necesito, en este orden:**
+
+1. **Inventario.** Lista todas las fuentes de instrucción que llegan al modelo en una ejecución real, con su tamaño y de dónde salen.
+2. **Volcado real.** Ejecuta el bot una vez y muéstrame el prompt final **tal como se envía al modelo**, no el texto guardado. Pégamelo completo.
+3. **Auditoría de choques.** Lista las instrucciones duplicadas y las que se contradicen. Empieza por las 4 menciones de envío gratis.
+4. **Reescritura.** Consolida todo en **un solo prompt**, sin duplicados, con esta jerarquía de precedencia explícita:
+   1. Guardarraíles de seguridad y salud — en código, no editables por la tienda
+   2. Estado real del pedido y slots ya capturados — datos, no texto
+   3. Toggles de la tienda: modalidad, adelanto, datos requeridos
+   4. Ficha del producto: ingredientes, dosis, precios
+   5. Tono y redacción del dueño de la tienda
+5. **Se arma en cada ejecución.** Hoy `ai_system_prompt` es una foto congelada que solo se regenera al pulsar Guardar, así que los toggles se desfasan del texto. El prompt debe construirse en cada ejecución desde la configuración vigente.
+6. **Vista «Prompt vigente».** Un panel de solo lectura en Instrucciones del bot que muestre el prompt exacto que se está usando ahora mismo, para poder verificarlo sin adivinar.
+
+**Regla de trabajo para todo lo que sigue: cada vez que agregues una instrucción, borra la que contradice. Si no encuentras cuál borrar, no la agregues y avísame.**
 
 ---
 
@@ -46,7 +82,9 @@ En el mismo chat de Vilma, el bot: resolvió Chiclayo → dijo que va por Shalom
 
 > ¿A qué ciudad y distrito sería el envío? Así verifico la cobertura 📍
 
-Se contradice dentro del mismo mensaje. Esto pasa porque **el CTA de la fase se concatena al final de la respuesta sin verificar si el dato ya está capturado**. No es un problema de redacción del prompt: es que el CTA se anexa por fuera.
+Se contradice dentro del mismo mensaje. Esto pasa porque **el CTA de la fase se concatena al final de la respuesta sin verificar si el dato ya está capturado**.
+
+**Dato verificado:** la frase «¿A qué ciudad y distrito sería el envío?» **no está en `ai_system_prompt`, ni en `crm_ai_prompts`, ni en `crm_bot_modules`** (0 coincidencias en las tres). Está **hardcodeada en el código** de la edge function. Por eso ninguna instrucción de prompt la va a eliminar: hay que encontrarla en `crm-ai-autoresponder` / `_shared/promptBuilder.ts` y condicionarla al estado de los slots.
 
 **Qué necesito:**
 
@@ -153,9 +191,10 @@ Al editar una secuencia de seguimiento, parece que se re-dispara a leads antiguo
 
 ### Cómo quiero la entrega
 
-- Un cambio a la vez, empezando por el **1** (saltos de línea) y el **2** (no repreguntar), que son los que se ven en cada chat.
+- **El punto 0 va primero y solo.** No empieces a implementar nada hasta que me hayas entregado el inventario, el volcado del prompt real y la lista de contradicciones. Espera mi aprobación antes de reescribir.
+- Después, un cambio a la vez, empezando por el **1** (saltos de línea) y el **2** (no repreguntar), que son los que se ven en cada chat.
 - El **3** (guardarraíles de salud) va en el mismo lote porque es riesgo.
-- Antes de tocar el prompt guardado, ten en cuenta que `ai_system_prompt` es una foto congelada de 22.304 caracteres que solo se regenera al pulsar Guardar. Las reglas duras deben inyectarse en cada ejecución desde el código, no depender de ese texto.
+- Las reglas duras se inyectan en cada ejecución desde el código; no dependen del texto guardado.
 - Corre `deno check`, los tests y el build antes de dar por terminado.
 - Recuérdame al final que no tocaste ningún rompevisto.
 
