@@ -163,3 +163,30 @@ Los hashes del contenido no cambiaron: lo que mueve `updated_at` son los contado
 **Hipótesis para el punto 10 del mensaje a Lovable:** si el runner usa `updated_at` —y no `aplicar_desde`— para decidir qué conversaciones son elegibles, entonces cada envío bombea esa marca de tiempo y puede re-calificar leads antiguos. Eso explicaría por qué «editar un rompevisto revive leads»: no haría falta editarlo, bastaría con que envíe. **No está verificado**; hay que leer el runner.
 
 Dato aparte: `total_reactivaciones` es alto (49, 36, 26, 17) y `total_conversiones` está en **0 en las 18 secuencias**. O el contador de conversiones no está instrumentado, o las reactivaciones no están cerrando. Conviene saber cuál de las dos antes de decidir nada sobre la cadencia.
+
+---
+
+## 6. Confianza y procedencia: el bot no tiene el dato
+
+**15 de 123 chats (12%)** traen dudas de originalidad, procedencia o registro sanitario. Es la segunda objeción más frecuente después del precio.
+
+Verificado en la base: el registro sanitario **no está en ninguna parte del sistema** — ni en la ficha del producto, ni en `ai_system_prompt`, ni en `crm_ai_prompts`, ni en `crm_bot_modules`. `politica_garantia` está vacío. Tampoco hay procedencia, laboratorio ni importador.
+
+Lo que provoca:
+
+| Chat | Cliente | Bot |
+|---|---|---|
+| 109 | «Tiene registro sanitario» | «Déjame consultar el dato exacto con nuestro equipo»… y luego «Todavía estoy esperando la confirmación». **Nunca lo dio** |
+| 117 | «¿Cuentan con permiso de DIGEMID, DIGESA?» | Solo reenvía la ficha del producto. **No responde** |
+| 40 | «¿En qué laboratorio lo fabricaron?» | «Es un suplemento natural importado» y cambia de tema. No dice de dónde |
+| 36 | — | **«Gracias pero encontré una mejor oferta con registro sanitario»**. Venta perdida, motivo explícito |
+| 76 | Pide video para verificar | El bot promete el video, no lo manda, e inventa que «WhatsApp demora en cargar» |
+
+**Registro sanitario y procedencia son datos distintos:** el primero dice que el producto está autorizado para venderse en Perú (para un suplemento en gotas lo emite DIGESA, no DIGEMID, que es de medicamentos); el segundo dice quién lo fabrica y de dónde viene. Uno no responde al otro: un registro puede amparar un producto hecho en cualquier país, y un producto importado puede no estar registrado.
+
+**Pero ninguno de los dos es lo que cierra la venta.** Cuando el cliente escribe «¿es original o bamba?» lo que pregunta de verdad es «¿me van a estafar?», y eso no lo contesta un código que no puede verificar desde WhatsApp. Lo contesta la modalidad de pago. Los dos mejores momentos del export lo hacen así:
+
+> «Hay que tener mucho cuidado. Nosotros te garantizamos que es original, te llega sellado, y lo mejor es que **pagas al recibirlo en tus manos**» — chat 37
+> «Con Shalom **el pago lo haces recién cuando lo recoges en la terminal**, no antes» — chat 86
+
+**Qué falta cargar en la ficha del producto:** número de registro sanitario, entidad que lo emitió, país de fabricación, importador o distribuidor en Perú, y política de garantía. Y una regla: si el dato no está cargado, el bot dice que lo confirma y **no promete enviarlo si no puede**.
