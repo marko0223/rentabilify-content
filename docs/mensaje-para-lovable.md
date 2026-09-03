@@ -3,7 +3,7 @@
 **Proyecto:** `rentabilify` (`f07cabe8-35ce-4164-b1b0-1daca62e1ba1`)
 **Recomendación:** enviarlo primero en **modo plan** (sin editar código) para ver qué propone, y recién después aprobar la ejecución.
 **Alcance:** solo el bot de confirmación. **Cero cambios en rompevistos.**
-**Clave:** el punto 0 obliga a *reescribir y consolidar* las instrucciones, no a apilar más encima.
+**Clave:** el punto 0 obliga a *inventariar y proponer* la consolidación. No borra ni aplica nada: la decisión de qué se quita es tuya.
 
 ---
 
@@ -16,6 +16,12 @@
 **NO modifiques, edites, desactives, reordenes ni toques de ninguna forma la tabla `crm_followup_sequences` ni ninguna secuencia de seguimiento (rompevistos) de ninguna tienda.**
 
 Están funcionando y reviven leads. Cualquier cambio ahí —incluido cambiar el texto de una plantilla, su `activo`, su `orden` o su `producto_id`— rompe algo que hoy da resultado. Si crees que un problema se resuelve tocando un rompevisto, **no lo toques: descríbelo en tu respuesta y déjalo pendiente.**
+
+### ⛔ SEGUNDA RESTRICCIÓN — NO BORRES NADA
+
+**No elimines ninguna instrucción, regla, prompt ni fragmento de texto existente**, aunque encuentres que se contradicen entre sí. Ni en `ai_system_prompt`, ni en `crm_ai_prompts`, ni en `crm_bot_modules`, ni en `reglas_obligatorias` / `reglas_prohibidas`, ni en el código.
+
+Cuando detectes una contradicción: **repórtala, dime cuál creo que debería ganar y por qué, y déjala como está.** Yo decido qué se quita. Nada de limpiezas por iniciativa propia.
 
 Todo lo que sigue se resuelve en el bot: `crm-ai-autoresponder`, `_shared/promptBuilder.ts`, `crm-process-incoming`, `whatsapp-webhook` y `crm_bot_settings`.
 
@@ -41,18 +47,18 @@ Solo en `ai_system_prompt` ya hay **16 reglas negativas** («NUNCA», «Prohibid
 **Lo que necesito, en este orden:**
 
 1. **Inventario.** Lista todas las fuentes de instrucción que llegan al modelo en una ejecución real, con su tamaño y de dónde salen.
-2. **Volcado real.** Ejecuta el bot una vez y muéstrame el prompt final **tal como se envía al modelo**, no el texto guardado. Pégamelo completo.
+2. **Volcado real.** Reconstruye leyendo el código el prompt final **tal como se ensambla y se envía al modelo** en una ejecución real, no el texto guardado. Pégamelo completo.
 3. **Auditoría de choques.** Lista las instrucciones duplicadas y las que se contradicen. Empieza por las 4 menciones de envío gratis.
-4. **Reescritura.** Consolida todo en **un solo prompt**, sin duplicados, con esta jerarquía de precedencia explícita:
+4. **Propuesta de consolidación — descrita, NO aplicada.** Muéstrame cómo quedaría todo en **un solo prompt** sin duplicados, pero **no lo escribas ni lo guardes todavía**. Quiero leer la propuesta antes. Usa esta jerarquía de precedencia:
    1. Guardarraíles de seguridad y salud — en código, no editables por la tienda
    2. Estado real del pedido y slots ya capturados — datos, no texto
    3. Toggles de la tienda: modalidad, adelanto, datos requeridos
    4. Ficha del producto: ingredientes, dosis, precios
    5. Tono y redacción del dueño de la tienda
-5. **Se arma en cada ejecución.** Hoy `ai_system_prompt` es una foto congelada que solo se regenera al pulsar Guardar, así que los toggles se desfasan del texto. El prompt debe construirse en cada ejecución desde la configuración vigente.
-6. **Vista «Prompt vigente».** Un panel de solo lectura en Instrucciones del bot que muestre el prompt exacto que se está usando ahora mismo, para poder verificarlo sin adivinar.
+5. **Se arma en cada ejecución (propuesta).** Hoy `ai_system_prompt` es una foto congelada que solo se regenera al pulsar Guardar, así que los toggles se desfasan del texto. Explícame cómo lo harías para que se construya en cada ejecución desde la configuración vigente. No lo implementes aún.
+6. **Vista «Prompt vigente» (propuesta).** Un panel de solo lectura en Instrucciones del bot que muestre el prompt exacto que se está usando ahora mismo. Descríbelo, no lo construyas todavía.
 
-**Regla de trabajo para todo lo que sigue: cada vez que agregues una instrucción, borra la que contradice. Si no encuentras cuál borrar, no la agregues y avísame.**
+**Regla de trabajo para todo lo que sigue: no agregues instrucciones nuevas encima de las viejas sin avisarme, y no borres las viejas. Si una regla nueva choca con una existente, dímelo y espera mi decisión.**
 
 ---
 
@@ -191,12 +197,12 @@ Al editar una secuencia de seguimiento, parece que se re-dispara a leads antiguo
 
 ### Cómo quiero la entrega
 
-- **El punto 0 va primero y solo.** No empieces a implementar nada hasta que me hayas entregado el inventario, el volcado del prompt real y la lista de contradicciones. Espera mi aprobación antes de reescribir.
-- Después, un cambio a la vez, empezando por el **1** (saltos de línea) y el **2** (no repreguntar), que son los que se ven en cada chat.
+- **Esta primera ronda es solo de análisis. No escribas ni modifiques código todavía.** Los puntos 1 al 10 son el contexto de a dónde vamos; en esta respuesta solo quiero el punto 0 y tu diagnóstico de los demás.
+- Entrégame: inventario de fuentes, volcado del prompt real ensamblado, lista de contradicciones y propuesta de consolidación. Nada aplicado.
+- Cuando apruebe, iremos de a un cambio por vez, empezando por el **1** (saltos de línea) y el **2** (no repreguntar), que son los que se ven en cada chat.
 - El **3** (guardarraíles de salud) va en el mismo lote porque es riesgo.
 - Las reglas duras se inyectan en cada ejecución desde el código; no dependen del texto guardado.
-- Corre `deno check`, los tests y el build antes de dar por terminado.
-- Recuérdame al final que no tocaste ningún rompevisto.
+- Confírmame al final, explícitamente, dos cosas: que no tocaste ningún rompevisto y que no borraste ninguna instrucción existente.
 
 ---
 

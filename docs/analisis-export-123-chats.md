@@ -143,3 +143,23 @@ Añade un cuarto: lista las 3 terminales de golpe sin ayudar a elegir ni pedir c
 ---
 
 *Cifras obtenidas del export de 123 chats y de consultas de solo lectura a la base de producción. No se modificó nada.*
+
+---
+
+## 5. Pista sobre el re-disparo de rompevistos (03/09, 19:20)
+
+Al verificar que nadie hubiera tocado las secuencias, encontré que `crm_followup_sequences.updated_at` **se mueve solo, cada pocos minutos, sin que nadie edite nada**:
+
+| orden | nombre | impresiones | reactivaciones | conversiones | updated_at |
+|---:|---|---:|---:|---:|---|
+| 10 | 30 min | 126 | 36 | 0 | 19:22:03 |
+| 12 | 2 horas | 79 | 17 | 0 | 19:21:08 |
+| 13 | 4 horas | 7 | 0 | 0 | 19:20:19 |
+| 11 | 1 hora | 108 | 26 | 0 | 19:20:17 |
+| 9 | 15 min | 134 | 49 | 0 | 19:16:07 |
+
+Los hashes del contenido no cambiaron: lo que mueve `updated_at` son los contadores `total_impresiones` / `total_reactivaciones` al enviar.
+
+**Hipótesis para el punto 10 del mensaje a Lovable:** si el runner usa `updated_at` —y no `aplicar_desde`— para decidir qué conversaciones son elegibles, entonces cada envío bombea esa marca de tiempo y puede re-calificar leads antiguos. Eso explicaría por qué «editar un rompevisto revive leads»: no haría falta editarlo, bastaría con que envíe. **No está verificado**; hay que leer el runner.
+
+Dato aparte: `total_reactivaciones` es alto (49, 36, 26, 17) y `total_conversiones` está en **0 en las 18 secuencias**. O el contador de conversiones no está instrumentado, o las reactivaciones no están cerrando. Conviene saber cuál de las dos antes de decidir nada sobre la cadencia.
