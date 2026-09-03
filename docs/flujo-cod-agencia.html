@@ -1,0 +1,503 @@
+<title>Flujo COD y Agencia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<style>
+:root{
+  --ground:#F2F5F4;
+  --surface:#FFFFFF;
+  --surface-2:#E9EEEC;
+  --ink:#131A18;
+  --ink-2:#4C5754;
+  --ink-3:#78827F;
+  --line:#DCE3E0;
+  --line-strong:#C3CDC9;
+  --accent:#0F5C4E;
+  --accent-soft:#DDEBE6;
+  --on-accent:#FFFFFF;
+  --bad:#A6383C;
+  --bad-soft:#F5E3E3;
+  --warn:#8A6220;
+  --bubble-in:#FFFFFF;
+  --bubble-out-bad:#F7E7E7;
+  --bubble-out-good:#DCEDE6;
+  --shadow:0 1px 2px rgba(19,26,24,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1211;
+    --surface:#151C1A;
+    --surface-2:#1D2624;
+    --ink:#E7EDEB;
+    --ink-2:#A5B0AD;
+    --ink-3:#7C8784;
+    --line:#28322F;
+    --line-strong:#3A4643;
+    --accent:#4FC0A4;
+    --accent-soft:#16302A;
+    --on-accent:#0D1211;
+    --bad:#E58A8D;
+    --bad-soft:#2E1B1C;
+    --warn:#D9AA5E;
+    --bubble-in:#1C2523;
+    --bubble-out-bad:#2E1D1E;
+    --bubble-out-good:#16332C;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1211;
+  --surface:#151C1A;
+  --surface-2:#1D2624;
+  --ink:#E7EDEB;
+  --ink-2:#A5B0AD;
+  --ink-3:#7C8784;
+  --line:#28322F;
+  --line-strong:#3A4643;
+  --accent:#4FC0A4;
+  --accent-soft:#16302A;
+  --on-accent:#0D1211;
+  --bad:#E58A8D;
+  --bad-soft:#2E1B1C;
+  --warn:#D9AA5E;
+  --bubble-in:#1C2523;
+  --bubble-out-bad:#2E1D1E;
+  --bubble-out-good:#16332C;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.6;
+  margin:0;
+  padding:0 20px 100px;
+}
+.wrap{max-width:1120px;margin:0 auto}
+
+h1,h2,h3{font-family:"Bricolage Grotesque","Source Sans 3",sans-serif;text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,4.4vw,46px);font-weight:700;letter-spacing:-.02em;line-height:1.08}
+h2{font-size:clamp(21px,2.6vw,27px);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h3{font-size:17px;font-weight:600;letter-spacing:-.005em}
+p{margin:0}
+code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.86em}
+code{background:var(--surface-2);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+.eyebrow{
+  font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:600;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+}
+
+/* ---------- header ---------- */
+header{padding:56px 0 34px;border-bottom:2px solid var(--ink);display:flex;flex-direction:column;gap:16px}
+header .lede{font-size:18px;color:var(--ink-2);max-width:62ch}
+.metabar{display:flex;flex-wrap:wrap;gap:10px 28px;padding-top:6px}
+.metabar div{display:flex;flex-direction:column;gap:1px}
+.metabar b{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.metabar span{font-size:12.5px;color:var(--ink-3)}
+
+section{padding:52px 0;border-bottom:1px solid var(--line)}
+.sechead{display:flex;flex-direction:column;gap:9px;margin-bottom:26px}
+.sechead p{color:var(--ink-2);max-width:68ch}
+
+/* ---------- branch diagram ---------- */
+.trunk{display:flex;flex-direction:column;gap:8px;max-width:560px;margin:0 auto}
+.step{
+  display:flex;align-items:flex-start;gap:13px;background:var(--surface);
+  border:1px solid var(--line);border-radius:9px;padding:11px 14px;box-shadow:var(--shadow);
+}
+.step .n{
+  font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:600;color:var(--ink-3);
+  padding-top:3px;min-width:16px;font-variant-numeric:tabular-nums;
+}
+.step .t{font-size:14.5px;line-height:1.4}
+.step .t em{font-style:normal;color:var(--ink-3);display:block;font-size:12.5px;margin-top:2px}
+.step.new{border-color:var(--accent);background:var(--accent-soft)}
+.step.new .n{color:var(--accent)}
+.connector{width:2px;height:18px;background:var(--line-strong);margin:0 auto}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:4px}
+.branch{display:flex;flex-direction:column;gap:8px}
+.branch-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 14px;border-radius:9px;font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:700;font-size:15px;color:var(--on-accent);background:var(--accent);
+}
+.branch-head span{font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:600;opacity:.8}
+.branch.cod .branch-head{background:var(--surface-2);color:var(--ink);border:1px solid var(--line-strong)}
+.endcap{
+  text-align:center;font-family:"JetBrains Mono",monospace;font-size:11.5px;
+  color:var(--ink-3);padding:8px;border:1px dashed var(--line-strong);border-radius:8px;
+}
+
+/* ---------- change list ---------- */
+.changes{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.change{background:var(--surface);padding:18px 19px;display:flex;flex-direction:column;gap:7px}
+.change .tag{font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.change p{font-size:14.5px;color:var(--ink-2)}
+
+/* ---------- chat comparison ---------- */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.lane{display:flex;flex-direction:column;gap:12px;min-width:0}
+.lane-head{display:flex;align-items:baseline;gap:9px;padding-bottom:9px;border-bottom:2px solid var(--line-strong)}
+.lane-head h3{font-size:15px}
+.lane-head .badge{
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:600;
+  padding:2px 7px;border-radius:20px;letter-spacing:.05em;
+}
+.lane.hoy .lane-head{border-bottom-color:var(--bad)}
+.lane.hoy .badge{background:var(--bad-soft);color:var(--bad)}
+.lane.new .lane-head{border-bottom-color:var(--accent)}
+.lane.new .badge{background:var(--accent-soft);color:var(--accent)}
+
+.chat{display:flex;flex-direction:column;gap:9px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px 14px}
+.msg{max-width:88%;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.45;white-space:pre-line;box-shadow:var(--shadow)}
+.msg.cli{align-self:flex-start;background:var(--bubble-in);border:1px solid var(--line);border-bottom-left-radius:4px}
+.lane.hoy .msg.bot{align-self:flex-end;background:var(--bubble-out-bad);border-bottom-right-radius:4px}
+.lane.new .msg.bot{align-self:flex-end;background:var(--bubble-out-good);border-bottom-right-radius:4px}
+.msg b{font-weight:700}
+.stamp{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-3);align-self:center;padding:3px 0;letter-spacing:.04em}
+.note{
+  font-size:13px;line-height:1.45;padding:7px 0 7px 12px;border-left:3px solid var(--bad);color:var(--bad);
+  align-self:stretch;
+}
+.lane.new .note{border-left-color:var(--accent);color:var(--accent)}
+.note b{font-weight:700}
+.dead{
+  align-self:center;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--bad);
+  border:1px dashed var(--bad);border-radius:7px;padding:7px 12px;text-align:center;
+}
+.won{
+  align-self:center;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--accent);
+  border:1px dashed var(--accent);border-radius:7px;padding:7px 12px;text-align:center;
+}
+.slots{
+  align-self:flex-start;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-3);
+  background:var(--surface-2);border-radius:6px;padding:5px 9px;line-height:1.5;max-width:100%;
+  overflow-x:auto;white-space:nowrap;
+}
+
+/* ---------- table ---------- */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:640px}
+th,td{text-align:left;padding:11px 15px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);background:var(--surface-2)}
+tr:last-child td{border-bottom:none}
+td.where{white-space:nowrap;font-family:"JetBrains Mono",monospace;font-size:12px}
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;font-family:"JetBrains Mono",monospace}
+.pill.rv{background:var(--accent-soft);color:var(--accent)}
+.pill.tg{background:var(--surface-2);color:var(--ink-2)}
+.pill.pr{background:var(--bad-soft);color:var(--bad)}
+
+/* ---------- transversal ---------- */
+.cross{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:20px;display:flex;flex-direction:column;gap:13px}
+.card.risk{border-color:var(--bad)}
+.card h3{display:flex;align-items:center;gap:8px}
+.qa{display:flex;flex-direction:column;gap:5px}
+.qa .who{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.qa .txt{font-size:14px;line-height:1.45;padding-left:11px;border-left:2px solid var(--line-strong)}
+.qa.bad .txt{border-left-color:var(--bad)}
+.qa.good .txt{border-left-color:var(--accent)}
+
+footer{padding:44px 0 0;color:var(--ink-3);font-size:13.5px;line-height:1.6}
+
+@media (max-width:800px){
+  .compare,.cross,.split{grid-template-columns:1fr}
+  .msg{max-width:92%}
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Kito Store · Glucora Berberina · Rediseño de flujo</p>
+  <h1>Flujo COD y Agencia</h1>
+  <p class="lede">Qué hace el bot hoy, turno por turno, y qué debería hacer. Los dos flujos comparten el mismo tronco y se separan en un solo punto: después de crear el pedido.</p>
+  <div class="metabar">
+    <div><b>2.4%</b><span>confirmados hoy (12 de 498)</span></div>
+    <div><b>8.9</b><span>rompevistos por chat</span></div>
+    <div><b>7 de 8</b><span>pedidos varados sin adelanto</span></div>
+    <div><b>11 de 105</b><span>chats donde el bot pidió los datos</span></div>
+  </div>
+</header>
+
+<section>
+  <div class="sechead">
+    <p class="eyebrow">La idea en un dibujo</p>
+    <h2>Un tronco común, una bifurcación</h2>
+    <p>Hasta el paso 5 el flujo es idéntico para Lima y para provincia. La modalidad no se pregunta: <strong>se deriva de la cobertura</strong>. COD termina al crear el pedido — no lleva adelanto. Agencia tiene cuatro pasos más que <strong>hoy no existen en ninguna parte del sistema</strong>, y ahí es donde se pierden 7 de cada 8 pedidos.</p>
+  </div>
+
+  <div class="trunk">
+    <div class="step"><span class="n">1</span><span class="t">Entrada — responder en menos de 30 s<em>Producto, precio y una sola pregunta de calificación</em></span></div>
+    <div class="step"><span class="n">2</span><span class="t">Resolver la duda que trajo al cliente<em>Nunca avanzar con una objeción abierta</em></span></div>
+    <div class="step"><span class="n">3</span><span class="t">Ubicación → resolver cobertura<em>El slot lleno nunca se vuelve a preguntar</em></span></div>
+    <div class="step new"><span class="n">4</span><span class="t">Informar la modalidad como un hecho<em>«En La Perla es contraentrega» / «A Ica va por Shalom» — no se pregunta</em></span></div>
+    <div class="step new"><span class="n">5</span><span class="t">Cierre asumido: pedir los datos, no la cantidad<em>El paso que falta hoy</em></span></div>
+    <div class="connector"></div>
+    <div class="split">
+      <div class="branch cod">
+        <div class="branch-head">COD · Lima <span>sin adelanto</span></div>
+        <div class="step"><span class="n">6</span><span class="t">Pedido creado + resumen<em>Nombre, dirección, referencia</em></span></div>
+        <div class="step"><span class="n">7</span><span class="t">Confirmado<em>Paga al recibir</em></span></div>
+        <div class="endcap">Termina aquí</div>
+      </div>
+      <div class="branch">
+        <div class="branch-head">AGENCIA · Provincia <span>adelanto S/20</span></div>
+        <div class="step"><span class="n">6</span><span class="t">Elegir terminal<em>Solo las de la ciudad pedida; el cliente confirma</em></span></div>
+        <div class="step"><span class="n">7</span><span class="t">Pedido creado + DNI<em>La agencia lo exige para entregar</em></span></div>
+        <div class="step new"><span class="n">8</span><span class="t">Pedir el adelanto en el acto<em>Motivo, total, adelanto, saldo y cuentas — un solo mensaje</em></span></div>
+        <div class="step new"><span class="n">9</span><span class="t">Perseguir la captura<em>+45 min · +4 h · +24 h</em></span></div>
+        <div class="step new"><span class="n">10</span><span class="t">Captura validada → confirmado</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sechead">
+    <p class="eyebrow">Qué cambia exactamente</p>
+    <h2>Cinco cambios de comportamiento</h2>
+  </div>
+  <div class="changes">
+    <div class="change">
+      <span class="tag">Memoria</span>
+      <h3>Un dato dado no se vuelve a pedir</h3>
+      <p>El bot revisa qué slots están llenos antes de escribir. Si ya tiene el distrito, lo confirma en una línea y pide el siguiente vacío. Una sola pregunta por mensaje.</p>
+    </div>
+    <div class="change">
+      <span class="tag">Cierre</span>
+      <h3>Se asume la cantidad</h3>
+      <p>Se acabó el «¿cuántas unidades te gustaría?». De 27 chats que dieron ubicación, 25 nunca eligieron cantidad. Se propone el pack de 2 y se piden los datos.</p>
+    </div>
+    <div class="change">
+      <span class="tag">Modalidad</span>
+      <h3>COD o agencia se deriva, no se pregunta</h3>
+      <p>La cobertura del distrito decide. El bot informa la modalidad y su ventaja, y sigue. Nunca convierte un COD en agencia sin que el cliente lo pida.</p>
+    </div>
+    <div class="change">
+      <span class="tag">Cobro</span>
+      <h3>El bot no se desconecta al crear el pedido</h3>
+      <p>En agencia, el adelanto se pide a los 2 minutos y se persigue en tres tiempos. Hoy el pedido cae a la cadencia genérica y muere en <code>falta_pago</code>.</p>
+    </div>
+    <div class="change">
+      <span class="tag">Silencio</span>
+      <h3>Los rompevistos escuchan antes de hablar</h3>
+      <p>No disparan si el cliente escribió hace menos de 20 min, si pidió tiempo, o entre las 22:00 y las 07:00. Tope de 4 mensajes sin respuesta.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sechead">
+    <p class="eyebrow">Flujo 1 de 2</p>
+    <h2>COD — Lima, pago contraentrega</h2>
+    <p>Caso real del export: clienta de La Perla, Callao. A la izquierda lo que ocurrió; a la derecha el mismo cliente con el flujo propuesto.</p>
+  </div>
+
+  <div class="compare">
+
+    <div class="lane hoy">
+      <div class="lane-head"><h3>Hoy</h3><span class="badge">MUERE EN 3 TURNOS</span></div>
+      <div class="chat">
+        <div class="msg cli">¿Cuánto cuesta?</div>
+        <div class="msg bot">¡Hola! Glucora Berberina Sugar Control 🌿
+1 frasco S/79 · 2 frascos S/109 · 3 frascos S/139
+¿De qué ciudad nos escribes?</div>
+        <div class="msg cli">Lima</div>
+        <div class="msg bot">¡Genial, Mariela! 🙌 En Lima tenemos pago contraentrega.
+¿A qué ciudad y distrito sería el envío?</div>
+        <div class="note"><b>Repregunta la ciudad</b> que le acaban de dar. Pasa en 10 de los 105 chats.</div>
+        <div class="msg cli">La perla callao</div>
+        <div class="msg bot">Perfecto, ya tengo anotado La Perla 📍
+¿A qué ciudad y distrito sería el envío?</div>
+        <div class="note"><b>La vuelve a pedir</b>, incluso diciendo que ya la tiene anotada.</div>
+        <div class="msg cli">La perla callao</div>
+        <div class="msg bot">¿Cuántas unidades te gustaría pedir?</div>
+        <div class="note">Pregunta abierta. <b>25 de 27 clientes nunca la responden.</b></div>
+        <div class="stamp">— silencio —</div>
+        <div class="stamp">+15 MIN</div>
+        <div class="msg bot">Hola Mariela 👋 vi que te interesó Glucora. ¿Te quedó alguna duda? Estoy para ayudarte 🙂</div>
+        <div class="stamp">+30 MIN</div>
+        <div class="msg bot">Mariela, Glucora te ayuda a apoyar tu bienestar metabólico de forma natural. ¿Quieres que te cuente cómo se toma?</div>
+        <div class="stamp">+1 H</div>
+        <div class="msg bot">Recuerda que Glucora está a  con envío incluido a todo el Perú 🚚 ¿Avanzamos con tu pedido?</div>
+        <div class="note"><b>El precio sale vacío.</b> 91 mensajes así en 30 días. Y «envío incluido» es falso en provincia.</div>
+        <div class="stamp">+3 H</div>
+        <div class="msg bot">Quería consultarte si aún te interesa eliminar esa verruga…</div>
+        <div class="note"><b>Rompevisto de otro producto.</b> 7 secuencias de Verrucure siguen activas sin producto asignado.</div>
+        <div class="dead">Chat perdido · etiqueta: en_conversacion</div>
+      </div>
+    </div>
+
+    <div class="lane new">
+      <div class="lane-head"><h3>Propuesto</h3><span class="badge">PEDIDO EN 4 TURNOS</span></div>
+      <div class="chat">
+        <div class="msg cli">¿Cuánto cuesta?</div>
+        <div class="msg bot">¡Hola! Glucora Berberina 🌿
+1 frasco S/79 · el pack de 2 (el más pedido) S/109.
+¿A qué distrito lo enviaríamos? Así te digo si llega mañana.</div>
+        <div class="note">Precio completo de una vez y <b>una sola pregunta</b>, la del primer slot vacío.</div>
+        <div class="msg cli">La perla callao</div>
+        <div class="slots">distrito: La Perla · provincia: Callao · cobertura → COD</div>
+        <div class="msg bot">En La Perla llega mañana y es <b>pago contraentrega</b>: le pagas al repartidor recién cuando lo tienes en la mano 🙌
+
+Te dejo separado el pack de 2 a S/109. Pásame estos 2 datos y lo despacho hoy:
+1) Nombre completo
+2) Dirección exacta + referencia</div>
+        <div class="note">La modalidad se <b>informa</b>, no se pregunta. Y el cierre asume la cantidad en vez de preguntarla.</div>
+        <div class="msg cli">Mariela Rojas Pinto
+Jr. Los Pinos 245, La Perla. Frente al parque Sáenz Peña</div>
+        <div class="msg bot">Listo Mariela 📦 Tu pedido <b>CRM-10482</b> queda reservado:
+
+Pack de 2 Glucora — <b>S/109</b>
+Jr. Los Pinos 245, La Perla (Callao)
+Llega mañana entre 9am y 6pm
+Pagas los S/109 al repartidor
+
+Te aviso apenas salga a ruta 🙌</div>
+        <div class="won">Pedido creado + confirmado · COD no lleva adelanto</div>
+        <div class="note">Si se hubiera quedado callada tras dar el distrito, el <b>único</b> rompevisto sería: «Solo me falta tu nombre y dirección para despacharlo hoy 📦».</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <div class="sechead">
+    <p class="eyebrow">Flujo 2 de 2</p>
+    <h2>Agencia — provincia, adelanto de S/20</h2>
+    <p>Aquí está el 87% de la pérdida. El bot llega a crear el pedido y se desconecta: la secuencia que persigue el adelanto no existe en el sistema.</p>
+  </div>
+
+  <div class="compare">
+
+    <div class="lane hoy">
+      <div class="lane-head"><h3>Hoy</h3><span class="badge">7 DE 8 SE PIERDEN AQUÍ</span></div>
+      <div class="chat">
+        <div class="msg cli">Soy de Ica, ¿llega hasta acá?</div>
+        <div class="msg bot">¡Claro que sí! Enviamos a todo el Perú 🚚
+¿A qué ciudad y distrito sería el envío?</div>
+        <div class="note">Ya dijo Ica. <b>Repregunta.</b></div>
+        <div class="msg cli">Ica, Ica</div>
+        <div class="msg bot">Tenemos estas agencias: Shalom Huacho, Shalom Huaral, Shalom Ica Centro, Shalom Chancay…</div>
+        <div class="note"><b>Mezcla terminales de otras ciudades</b> en la misma lista.</div>
+        <div class="msg cli">La de Ica centro</div>
+        <div class="msg bot">¿Cuántas unidades te gustaría pedir?</div>
+        <div class="msg cli">2</div>
+        <div class="msg bot">¡Perfecto! Quedo atenta 😊</div>
+        <div class="note">Pedido creado, etiqueta <code>falta_pago</code>. <b>Nunca pide el adelanto.</b></div>
+        <div class="stamp">+15 MIN · +30 MIN · +1 H · +2 H · +4 H…</div>
+        <div class="msg bot">Hola Teresa 👋 vi que te interesó Glucora. ¿Te quedó alguna duda?</div>
+        <div class="msg bot">Muchas personas ya están notando cambios positivos con Glucora 💪 ¿Quieres ser la próxima?</div>
+        <div class="note">Cae a la <b>cadencia genérica de 18 rompevistos</b>, ninguno sabe que ya hay un pedido creado esperando S/20.</div>
+        <div class="dead">Pedido varado · falta_pago · nunca se cobra</div>
+      </div>
+    </div>
+
+    <div class="lane new">
+      <div class="lane-head"><h3>Propuesto</h3><span class="badge">EL ADELANTO SE PERSIGUE</span></div>
+      <div class="chat">
+        <div class="msg cli">Soy de Ica, ¿llega hasta acá?</div>
+        <div class="slots">departamento: Ica · cobertura → AGENCIA / Shalom</div>
+        <div class="msg bot">Sí, a Ica llega por <b>agencia Shalom</b> en 2 días 📦
+Tenemos 2 terminales en Ica:
+1) Shalom Ica Centro — Av. Municipalidad 128
+2) Shalom Ica Norte — Av. Los Maestros 455
+¿Cuál te queda más cerca?</div>
+        <div class="note">Solo terminales <b>de la ciudad pedida</b>. Si hubiera una sola, se propone y se pide confirmación.</div>
+        <div class="msg cli">La del centro</div>
+        <div class="msg bot">Anotado: Shalom Ica Centro ✅
+
+Te dejo separado el pack de 2 a S/109. Pásame:
+1) Nombre completo
+2) DNI — la agencia lo pide para entregarte el paquete</div>
+        <div class="msg cli">Teresa Castillo Ramos, 45781203</div>
+        <div class="msg bot">Listo Teresa, tu pedido <b>CRM-10517</b> ya está reservado 📦
+Pack de 2 Glucora — S/109 · Shalom Ica Centro
+
+Como va por agencia, necesito el adelanto del flete: <b>S/20</b>.
+El resto (<b>S/89</b>) lo pagas al recoger tu paquete.
+
+Yape / Plin: <b>999 999 999</b> — Kito Store
+Mándame la captura y te paso el código de seguimiento 🙌</div>
+        <div class="note"><b>+2 min del pedido.</b> Motivo, total, adelanto, saldo y cuentas en un solo mensaje.</div>
+        <div class="stamp">+45 MIN · estado: esperando_adelanto</div>
+        <div class="msg bot">Teresa, tu pedido sale en el despacho de hoy hasta las 4pm. ¿Te ayudo con el Yape?</div>
+        <div class="stamp">+4 H</div>
+        <div class="msg bot">Si el adelanto te da desconfianza, te cuento: es solo para reservar el flete a la agencia. Si tu paquete no llega, se te devuelve. ¿Te lo dejo separado para mañana?</div>
+        <div class="note">Un solo mensaje que <b>anticipa la objeción real</b>, en vez de repetir «¿avanzamos?».</div>
+        <div class="stamp">+24 H</div>
+        <div class="msg bot">¿Lo dejo reservado un día más o lo libero?</div>
+        <div class="note">Sin respuesta → <code>perdido_sin_adelanto</code> + pasa a humano. <b>No se insiste una quinta vez.</b></div>
+        <div class="msg cli">📎 captura-yape.jpg</div>
+        <div class="won">Captura validada → adelanto S/20 · saldo S/89 → confirmado</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <div class="sechead">
+    <p class="eyebrow">Se aplican a los dos flujos</p>
+    <h2>Las dos ramas que hoy rompen la venta</h2>
+  </div>
+  <div class="cross">
+
+    <div class="card">
+      <h3>«¿Es original o es bamba?»</h3>
+      <div class="qa bad"><span class="who">Hoy</span><p class="txt">«Es 100% original, contamos con registro sanitario.» → y vuelve a vender. Uno de los clientes se despidió con «por ese método de compra y envío no confío».</p></div>
+      <div class="qa good"><span class="who">Propuesto · COD</span><p class="txt">«Te entiendo perfecto. Justo por eso en Lima trabajamos contraentrega: <strong>no pagas nada hasta tenerlo en la mano</strong>. Lo revisas con el repartidor delante y recién ahí pagas.»</p></div>
+      <div class="qa good"><span class="who">Propuesto · Agencia</span><p class="txt">«El adelanto de S/20 es solo el flete de la agencia, no el producto — los S/89 los pagas cuando lo tienes. Y si el paquete no llega, el flete se devuelve.»</p></div>
+      <p style="font-size:13.5px;color:var(--ink-2)">La modalidad <em>es</em> la respuesta a la desconfianza. Hoy el bot nunca la usa como argumento.</p>
+    </div>
+
+    <div class="card risk">
+      <h3>«Soy insulinodependiente»</h3>
+      <div class="qa bad"><span class="who">Hoy</span><p class="txt">«La berberina ayuda a mejorar la sensibilidad a la insulina» → y ofrece agendar el pedido. Es una afirmación terapéutica sobre un suplemento, dicha a un paciente medicado. Apareció en 4 chats.</p></div>
+      <div class="qa good"><span class="who">Propuesto</span><p class="txt">«Glucora es un suplemento natural de apoyo, <strong>no reemplaza ni modifica tu tratamiento médico</strong>. Consúltalo con tu médico antes de empezar 🙌» → y el bot <strong>se pausa y pasa a un humano</strong>.</p></div>
+      <div class="qa good"><span class="who">Si dice «lo consulto con mi médico»</span><p class="txt">Estado <code>en_pausa</code>, motivo <code>consultar_medico</code>. <strong>Silencio 48 h.</strong> El reenganche pregunta por la consulta, no por el pedido.</p></div>
+      <p style="font-size:13.5px;color:var(--ink-2)">Esto no es conversión, es riesgo. Hoy el campo <code>reglas_prohibidas</code> está vacío: no hay ni una sola prohibición configurada.</p>
+    </div>
+
+  </div>
+</section>
+
+<section style="border-bottom:none">
+  <div class="sechead">
+    <p class="eyebrow">Para quien lo va a configurar</p>
+    <h2>Dónde se toca cada cambio</h2>
+    <p>Nada de esto necesita migración de base de datos. Las columnas de segmentación ya existen en los rompevistos y están sin usar.</p>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>Cambio en el flujo</th><th>Dónde</th><th>Detalle</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Apagar los rompevistos de Verrucure</td><td class="where"><span class="pill rv">rompevistos</span></td><td>7 secuencias con <code>producto_id</code> vacío disparando a leads de Glucora</td></tr>
+        <tr><td>Arreglar el precio vacío</td><td class="where"><span class="pill rv">rompevistos</span></td><td><code>{{precio}}</code> sin resolver en las secuencias de 1 h y 6 h</td></tr>
+        <tr><td>Bajar de 18 secuencias a 4 por estado</td><td class="where"><span class="pill rv">rompevistos</span></td><td>Poblar <code>etapa</code> y <code>etiqueta</code>, hoy todas en <code>__sin_confirmar__</code></td></tr>
+        <tr><td>Reglas de silencio (20 min · noche · pidió tiempo)</td><td class="where"><span class="pill rv">rompevistos</span></td><td>Hoy no existe ninguna condición de supresión</td></tr>
+        <tr><td>Secuencia de recuperación del adelanto</td><td class="where"><span class="pill rv">rompevistos</span></td><td>Nueva, sobre el estado <code>esperando_adelanto</code></td></tr>
+        <tr><td>Pedir dirección, referencia, DNI y cantidad</td><td class="where"><span class="pill tg">toggle</span></td><td><code>confirmation_required_fields</code> hoy solo pide nombre, coordenadas y teléfono</td></tr>
+        <tr><td>Guardarraíl de salud + escalado a humano</td><td class="where"><span class="pill tg">toggle</span></td><td><code>reglas_prohibidas</code> está vacío</td></tr>
+        <tr><td>No repreguntar un slot lleno</td><td class="where"><span class="pill pr">prompt</span></td><td>Requiere resolver antes la «foto congelada» del prompt</td></tr>
+        <tr><td>Cierre asumido</td><td class="where"><span class="pill pr">prompt</span></td><td>Va al final: es el cambio de mayor riesgo</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    <p><span class="pill rv">rompevistos</span> y <span class="pill tg">toggle</span> son configuración: sin código y sin riesgo — y se llevan la mayor parte del daño. <span class="pill pr">prompt</span> va al final porque el <code>ai_system_prompt</code> es una foto de 22.304 caracteres que solo se regenera al pulsar Guardar; tocarlo antes hace que los toggles se vuelvan a desfasar.</p>
+    <p style="margin-top:12px">Cifras verificadas por lectura directa de la base de producción de Kito Store (30 días) y del export de 105 chats del 03/09/2026.</p>
+  </footer>
+</section>
+
+</div>
