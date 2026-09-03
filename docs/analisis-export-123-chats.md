@@ -190,3 +190,25 @@ Lo que provoca:
 > «Con Shalom **el pago lo haces recién cuando lo recoges en la terminal**, no antes» — chat 86
 
 **Qué falta cargar en la ficha del producto:** número de registro sanitario, entidad que lo emitió, país de fabricación, importador o distribuidor en Perú, y política de garantía. Y una regla: si el dato no está cargado, el bot dice que lo confirma y **no promete enviarlo si no puede**.
+
+---
+
+## 7. La ficha del producto se contradice a sí misma
+
+El bot no inventa la fórmula: **lee dos fuentes que no coinciden.**
+
+| Campo | Dice |
+|---|---|
+| `productos.nombre` | «Gotas Líquidas de Berberina y **Cúrcuma** (**30 ml**)» |
+| `productos.descripcion` | «Berberina, Canela de Ceilán, Melón Amargo, Gymnema Sylvestre, Cromo y adaptógenos… **59 mL**» |
+
+Dos choques directos: la **cúrcuma** aparece en el nombre y no existe en la descripción; el **contenido** es 30 ml en uno y 59 ml en el otro. Eso explica exactamente el reparto que veíamos en los chats: cúrcuma en 122 (viene del nombre), canela en 41, gymnema en 25, cromo en 16 y melón amargo en 5 (vienen de la descripción). No es alucinación del modelo, es la ficha.
+
+**Y el campo `beneficios` es la fuente de la afirmación médica.** Contiene, literalmente:
+
+> «Berberina: el botánico más estudiado en relación al metabolismo de la glucosa y **la sensibilidad a la insulina**»
+> «Cromo: mineral clave en **la sensibilidad normal a la insulina**»
+
+De ahí salió la respuesta al diabético tipo 2 del chat 64. **El guardarraíl de salud del prompt va a pelear contra el texto del producto** mientras ese campo diga eso: se inyecta en cada conversación.
+
+**No existe campo para el registro sanitario ni para la procedencia.** La tabla `productos` solo tiene `descripcion` y `beneficios`. En `crm_bot_settings`, `politica_garantia` sí lo lee el motor y está vacío: es el sitio natural para el registro y la garantía mientras no exista un campo propio.
