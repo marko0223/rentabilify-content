@@ -49,17 +49,15 @@ Las secuencias `orden 11` ("1 hora") y `orden 14` ("6 horas") usan `{{precio}}`,
 **91 mensajes enviados con el precio vacío en los últimos 30 días.** Además "envío incluido" es falso: en agencia se cobra adelanto de S/20 (`adelanto_agencia.enabled = true, valor = 20`).
 → Se arregla en el módulo de rompevistos. Los 3 informes se lo atribuían al bot.
 
-### 2.2 NUEVO — hay rompevistos de OTRO producto disparándose a los leads de Glucora
-7 de las 18 secuencias activas son de **Verrucure** (producto para verrugas), con `producto_id = NULL` y `cobertura = 'todos'`. Por eso se disparan a cualquier lead:
+### 2.2 CORREGIDO — un lead de Glucora recibe 9 rompevistos
+> **Corrección (03/09).** Aquí afirmé que las 7 secuencias de Verrucure tenían `producto_id` vacío y se disparaban a leads de Glucora. **Es falso**: lo inferí de `cobertura = 'todos'` sin consultar la columna. Las 18 secuencias activas sí tienen producto asignado, y el export de 123 chats confirma 0 menciones de Verrucure en chats de Glucora.
 
-> *"Quería consultarte si aún te interesa eliminar esa verruga…"*
-
-**10 mensajes de Verrucure enviados a leads de Glucora en 30 días.** Ningún informe lo detectó porque el export de 105 chats no los alcanzó. Es el daño de confianza más caro del sistema.
+El problema real es el volumen sobre un mismo lead. De las 18 secuencias activas, **9 son de Glucora** y disparan a los 15 min, 30 min, 1 h, 2 h, 4 h, 6 h, 9 h, 12 h y 16 h — todas con `etapa = '__sin_confirmar__'`, sin ninguna condición de supresión. En el export, **el 37% de los disparos salió a menos de 25 minutos del último mensaje del cliente**, con la conversación viva.
 
 ### 2.3 NUEVO — la carga real de follow-ups es 3x peor de lo reportado
 | | Informe Claude | Real (30 días) |
 |---|---|---|
-| Follow-ups por chat | 3 | **8.9** |
+| Follow-ups por chat | 3 | **8.9** (toda la tienda, 30 días, todos los productos) |
 | | | 4,436 envíos / 498 conversaciones |
 
 18 secuencias activas, **todas** con `etapa = '__sin_confirmar__'`, `etiqueta = NULL`, `cobertura = 'todos'`. Cero segmentación.
@@ -110,11 +108,11 @@ Cinco fases. Nada ejecutado. Las fases 1 y 2 no tocan el bot ni el prompt.
 
 | # | Acción | Evidencia |
 |---|---|---|
-| 1.1 | Desactivar o asignar `producto_id` a las 7 secuencias de Verrucure | §2.2 — 10 mensajes cruzados |
+| 1.1 | Reducir las 9 secuencias de Glucora a 3–4 | §2.2 — 9 disparos sobre un mismo lead |
 | 1.2 | Corregir `{{precio}}` en `orden 11` y `orden 14`, o quitar el precio del texto | §2.1 — 91 mensajes rotos |
 | 1.3 | Quitar "envío incluido a todo el Perú" (falso con adelanto de S/20) | §2.1 |
 | 1.4 | Eliminar duplicados: dejar **una** secuencia a 15 min; renombrar `orden 8` según su delay real | §2.3 |
-| 1.5 | Bajar de 18 secuencias a **máximo 4 por estado** | §2.3 — 8.9 por chat |
+| 1.5 | Bajar de 18 secuencias a **máximo 4 por estado** | §2.3 — 9 solo para Glucora |
 
 ### FASE 2 — Segmentación por estado (usa columnas que ya existen)
 
@@ -191,7 +189,7 @@ De los 27 chats que dieron ubicación, 25 nunca eligieron cantidad. El Golden Pa
 
 | Fase | Dónde se toca | Riesgo | Métrica de control |
 |---|---|---|---|
-| 1 | Rompevistos (config) | Ninguno | 0 mensajes rotos · 0 mensajes cruzados de producto |
+| 1 | Rompevistos (config) | Ninguno | 0 mensajes rotos · secuencias de Glucora ≤4 |
 | 2 | Rompevistos (config) | Bajo | Follow-ups por chat: 8.9 → **≤3** |
 | 3 | Toggles del bot | Bajo | % de chats donde se piden los datos |
 | 4 | Bot + rompevistos | Medio | % de pedidos que reciben adelanto (hoy 12.5%) |
@@ -205,4 +203,4 @@ De los 27 chats que dieron ubicación, 25 nunca eligieron cantidad. El Golden Pa
 
 ## 6. Resumen en una línea
 
-El bot no falla por falta de inteligencia conversacional: **falla porque no recuerda, no cierra y no cobra** — y porque encima recibe 8.9 rompevistos por chat, uno de ellos con el precio vacío y otros de un producto distinto. Las dos primeras fases son configuración pura, sin código y sin riesgo, y atacan la mayor parte del daño.
+El bot no falla por falta de inteligencia conversacional: **falla porque no recuerda, no cierra y no cobra** — y porque encima recibe 9 rompevistos configurados sin ninguna condición de silencio, uno de ellos con el precio vacío. Las dos primeras fases son configuración pura, sin código y sin riesgo, y atacan la mayor parte del daño.
