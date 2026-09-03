@@ -101,6 +101,28 @@ De los 10 pedidos creados, en **5 el bot nunca pidió el adelanto** y en **8 nun
 - **12 chats** donde el bot se despide y pregunta algo en el mismo mensaje:
   > *«¡Que tengas un excelente día! 🙌 ¿A qué ciudad y distrito sería el envío?»* — chat 2
 
+### 3.6 El bot se contradice dentro del mismo mensaje (caso Vilma, +51973424052)
+
+Un solo mensaje del bot concentra tres defectos. La clienta escribe:
+
+> **Vilma:** *«Donde se puede conprar en chiclayo  precio»*
+
+Y el bot responde:
+
+> Hola Vilma! El precio es: 1 unidad x S/ 79 2 unidades x S/ 109 (la más vendida) 3 unidades x S/ 129 Te lo enviamos por Shalom a Chiclayo para que lo recojas en terminal (demora 1 a 2 días hábiles) 📦 Tenemos estas terminales en Chiclayo: 1. Av. Las Américas Lt. 42 Mz. D (Urb. Monterrico) 2. Av. Panamericana 975 (Ovalo Señor de Sipán) 3. Calle Tacna N° 1095 😊
+>
+> ¿A qué ciudad y distrito sería el envío? Así verifico la cobertura 📍
+
+**1. Se pierden los saltos de línea.** Todo sale en un párrafo corrido. Los precios quedan pegados: «S/ 79 2 unidades x S/ 109» se lee como «79 2». Es ilegible en un teléfono, y no es un problema de redacción sino del pipeline de envío: el mismo bot en otros chats sí manda listas con saltos.
+
+**2. El bot se contradice a sí mismo.** Resolvió Chiclayo, dijo que va por Shalom a Chiclayo, listó las tres terminales **de Chiclayo**… y cerró preguntando a qué ciudad es el envío. El CTA de la fase se concatena al final de la respuesta **sin revisar si el slot ya está lleno**. Esta es la prueba más limpia de que la repregunta no es un problema de redacción del prompt: es que el CTA se anexa por fuera.
+
+**3. «Envío gratis» en un pedido de agencia.** El primer mensaje del chat dice *«Cuesta S/ 79 con envío gratis»*. La conversación está etiquetada **Agencia**, donde `adelanto_agencia` cobra S/20 de flete por adelantado.
+
+Añade un cuarto: lista las 3 terminales de golpe sin ayudar a elegir ni pedir confirmación, y nunca pide cantidad ni datos.
+
+---
+
 ### 3.6 Contradicción de envío
 *«Envío incluido»* aparece en 95 chats y *«envío gratis»* en 25, mientras `adelanto_agencia` cobra **S/20** por adelantado. Los 9 pedidos varados en `falta_pago` son exactamente los clientes a quienes se les prometió envío gratis y después se les pidió S/20.
 
