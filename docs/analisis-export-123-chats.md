@@ -212,3 +212,48 @@ Dos choques directos: la **cúrcuma** aparece en el nombre y no existe en la des
 De ahí salió la respuesta al diabético tipo 2 del chat 64. **El guardarraíl de salud del prompt va a pelear contra el texto del producto** mientras ese campo diga eso: se inyecta en cada conversación.
 
 **No existe campo para el registro sanitario ni para la procedencia.** La tabla `productos` solo tiene `descripcion` y `beneficios`. En `crm_bot_settings`, `politica_garantia` sí lo lee el motor y está vacío: es el sitio natural para el registro y la garantía mientras no exista un campo propio.
+
+---
+
+## 8. Verificación del despliegue del 03/09 19:15
+
+Comparación de mensajes salientes **generados por IA** (`ia_generado = true`), antes y después del despliegue.
+
+| Señal | Antes (1.011 msgs) | Después (133 msgs) | |
+|---|---:|---:|---|
+| Con descargo médico | 0,9% | **14,3%** | ✅ funciona |
+| Con saltos de línea | 36% | 37% | ❌ sin cambio |
+| CTA «¿A qué ciudad y distrito?» | 6,9% | 3,3% | ⚠️ sigue |
+| Dice «envío gratis / incluido» | 13,7% | 20,3% | ❌ sigue |
+| **Línea con un emoji suelto** | **0,0%** | **4,5%** | 🆕 **regresión** |
+
+### Lo único que sí cambió: el guardarraíl de salud
+Pasó de 0,9% a 14,3% de los mensajes. Se ve en producción:
+> «Glucora es un suplemento natural con Berberina que apoya el metabolismo de la glucosa y reduce antojos **(ojo: no reemplaza ningún tratamiento médico)**» — 19:38
+
+### El arreglo de saltos de línea no se puede dar por bueno
+El diagnóstico del agente fue que un saneador recomponía el texto con `join(" ")`. Pero el colapso **ya era intermitente antes del despliegue**. Dos mensajes al mismo cliente, con 2 minutos de diferencia y ambos previos al deploy:
+
+| Hora | Saltos | Resultado |
+|---|---:|---|
+| 18:56:55 | 2 | lista de precios y terminales **corrida** |
+| 18:59:01 | 7 | lista de terminales **bien formateada** |
+| 18:59:49 | 2 | lista **corrida** otra vez |
+
+Un saneador con `join(" ")` habría aplanado los tres. Que uno saliera bien indica que la variación viene del texto que genera el modelo, no solo del saneador. Los únicos saltos constantes son los `\n\n` que el código pone antes del CTA.
+
+### Regresión nueva: el filtro deja basura
+Antes del despliegue no había ni un mensaje con una línea que contuviera solo un emoji. Después hay 6 (4,5%):
+
+> «También tenemos promo de 2 x S/ 109 📦.
+>
+> 😊
+>
+> ¿A qué ciudad y distrito sería el envío?»
+
+El filtro que elimina las peticiones de datos duplicadas **borra la pregunta y deja huérfano el emoji que la acompañaba**.
+
+### Lo que sigue igual
+- **El CTA se anexa pase lo que pase**, incluso pegado a una despedida: *«¡Que tengas un excelente día! 🙌 / ¿A qué ciudad y distrito sería el envío?»* — 19:50.
+- **El video sigue prometiéndose y no se envía**, con una excusa nueva inventada: *«El sistema debe estar lento, te envío el video nuevamente en este mensaje 📹»* — 19:37, a la misma clienta del chat 76.
+- **«Envío gratis»** sigue apareciendo, ahora en el 20% de los mensajes.
