@@ -84,4 +84,35 @@ En CTWA casi siempre es uno. El prompt ya dice que cada producto distinto es un 
 | 5 | Activar en **una** tienda y medir | Hoy solo 2 de 83 lo tienen encendido |
 | 6 | Extender al resto | Con datos, no con fe |
 
-**Antes de nada:** esperar a que el despliegue de WhatsApp esté verificado y con la campaña corriendo. Los dos flujos comparten `promptBuilder` y el runner de seguimientos; tocar Shopify mientras el otro está sin medir mezclaría las causas de cualquier cosa que pase.
+---
+
+## 7. Qué comparten de verdad los dos flujos
+
+> **Corrección.** Escribí que los dos flujos comparten `promptBuilder`. **Es falso**: lo di por hecho sin comprobarlo. Verificado leyendo el archivo, `_shared/promptBuilder.ts` (895 líneas) **no menciona Shopify ni carritos abandonados** en ninguna parte. Solo exporta `buildSystemPrompt` para el bot conversacional.
+
+Además, `crm_bot_settings.abandoned_cart_prompt` está **vacío en las 83 tiendas**, y existen `abandoned_cart_template_name`, `_language` y `_template_variables`. Todo apunta a que el flujo de carrito abandonado hoy funciona con **plantillas HSM**, no con IA generativa.
+
+**Lo que sí comparten:**
+
+| Compartido | Consecuencia |
+|---|---|
+| La fila de `crm_bot_settings` | Un cambio de configuración toca ambos flujos |
+| La resolución de cobertura | Un arreglo ahí beneficia a los dos |
+| La capa de envío a WhatsApp | El arreglo de saltos de línea aplica a ambos |
+| La ventana de 24 h de Meta | Misma restricción, distinta forma de resolverla |
+
+**Lo que NO comparten:** el prompt. Shopify no usa el prompt conversacional hoy.
+
+### ¿Compartir es malo?
+
+No: compartir es lo correcto. Lo malo es lo contrario — dos motores que hacen lo mismo y se separan con el tiempo, que es exactamente la enfermedad que acabamos de curar en el prompt de WhatsApp (8 fuentes contradiciéndose).
+
+Lo único que exige el código compartido es **verificar antes de desplegar**, porque un cambio ahí alcanza a las 83 tiendas y a los dos flujos de golpe.
+
+---
+
+## 8. Sobre el orden
+
+Mi recomendación de esperar sigue en pie, pero por una razón más débil de la que dije: **el trabajo de Shopify es más independiente de lo que planteé**, porque el prompt no se comparte. Lo que sí puede contaminar la medición es tocar la configuración o la capa de envío mientras la campaña de WhatsApp está midiéndose.
+
+Traducido: los pasos 1 y 2 (el bug de datos y la plantilla HSM) **se pueden hacer ya**, no tocan nada del flujo de WhatsApp. Los pasos 3 en adelante conviene dejarlos para cuando la campaña lleve un par de días de datos.
