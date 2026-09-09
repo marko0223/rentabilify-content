@@ -216,9 +216,9 @@ section{padding:56px 0;}
 .hero .btn-out{background:rgba(255,255,255,.07);border-color:hsl(var(--stage-bd));color:hsl(var(--stage-fg));}
 .hero .btn-out:hover{background:rgba(255,255,255,.13);}
 .hero .uline{color:hsl(24 100% 66%);}
-.hero-band{position:relative;z-index:2;height:250px;pointer-events:none;}
-@media(min-width:768px){.hero-band{height:330px;}}
-@media(min-width:1280px){.hero-band{height:380px;}}
+.hero-band{position:relative;z-index:2;height:310px;pointer-events:none;}
+@media(min-width:768px){.hero-band{height:430px;}}
+@media(min-width:1280px){.hero-band{height:480px;}}
 .hero-hint{
   position:relative;z-index:3;display:flex;align-items:center;justify-content:center;gap:6px;
   margin-top:26px;font-size:11px;color:hsl(var(--stage-mu) / .85);
@@ -1448,55 +1448,30 @@ var BRANDS=[
    ═══════════════════════════════════════════════════════════════ */
 function makeGalaxy(cv, cfg){
   if(!cv) return;
-  var ctx=cv.getContext('2d'), W=0,H=0,DPR=1,cx=0,cy=0;
+  var ctx=cv.getContext('2d'), W=0,H=0,DPR=1,cx=0,cy=0, TAU=Math.PI*2;
   var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var ARMS=3, TWIST=1.85, TILT=cfg.tilt||0.58, FOV=3.1;
-  var rot=0, drag={on:false,x:0,vx:0}, raf=null;
+  var TILT=cfg.tilt||0.55, FOV=3.1, rot=0, drag={on:false,x:0,vx:0}, raf=null;
 
-  /* Paleta de la galaxia: del núcleo crema a la brasa del borde.
-     Nada de azules altos en los brazos — ahí es donde salía el magenta. */
-  var STOPS=[[255,246,232],[255,206,142],[255,150,72],[214,96,34],[150,58,22]];
-  function ramp(t){
-    t=Math.min(0.9999,Math.max(0,t))*(STOPS.length-1);
-    var i=Math.floor(t), f=t-i, a=STOPS[i], b=STOPS[i+1];
-    return 'rgb('+Math.round(a[0]+(b[0]-a[0])*f)+','+Math.round(a[1]+(b[1]-a[1])*f)+','+Math.round(a[2]+(b[2]-a[2])*f)+')';
-  }
-
-  /* Brazos espirales */
-  var P=[];
-  for(var i=0;i<cfg.density;i++){
-    var arm=i%ARMS, t=Math.pow(Math.random(),0.62), rad=0.18+t*2.30;
-    var th=arm*(Math.PI*2/ARMS)+rad*TWIST+(Math.random()-0.5)*0.55/(0.25+rad);
-    var sp=0.055+rad*0.045;
-    var star=Math.random()>0.90;                    /* chispa fría, para que respire */
-    var shade=Math.random()*0.22-0.11;              /* variación de brillo, no de tono */
-    P.push({r:rad,th:th,y:(Math.random()-0.5)*sp*2,jx:(Math.random()-0.5)*sp,jz:(Math.random()-0.5)*sp,
-            s:(Math.random()*1.5+0.40)*(1.35-rad*0.28),
-            w:0.30+Math.random()*0.70,
-            hot:star?0:Math.max(0,Math.min(1,rad/2.45+shade)),
-            col:star?'rgb(198,219,255)':ramp(Math.max(0,Math.min(1,rad/2.45+shade))),
-            star:star});
-  }
-  /* Estrellas de fondo */
-  var DUST=[];
-  for(var d=0;d<cfg.dust;d++) DUST.push({x:Math.random(),y:Math.random(),s:Math.random()*1.3+0.25,a:Math.random()*0.45+0.12});
-
-  /* Logos que viajan por los brazos hacia el núcleo.
-     Cada uno tiene un desfase FIJO en el brazo: se desplazan sólo hacia
-     adentro, y el giro se lo da la galaxia entera. Antes llevaban además
-     una rotación diferencial propia y eso los hacía zigzaguear. */
-  var TR=[];
-  cfg.travelers.forEach(function(b,i){
-    var im=null;
-    if(b.src){ im=new Image(); im.decoding='async'; im.src=b.src; }
-    TR.push({
-      b:b, im:im,
-      arm:i%ARMS,
-      p:i/cfg.travelers.length,                 /* repartidos, no amontonados */
-      sp:0.000034+Math.random()*0.000018,       /* ~12-18 s de recorrido */
-      off:(i%3-1)*0.16 + (Math.random()-0.5)*0.10   /* carril fijo dentro del brazo */
+  /* ── Campo de estrellas: una cáscara esférica, densa en el borde ── */
+  var STARS=[];
+  for(var i=0;i<cfg.stars;i++){
+    var u=Math.random()*TAU, v=Math.acos(2*Math.random()-1);
+    var shell=Math.random()<0.72;
+    var rr=shell ? 2.00+Math.pow(Math.random(),0.55)*0.72 : Math.pow(Math.random(),0.7)*1.95;
+    var tone=Math.random();
+    STARS.push({
+      x:Math.sin(v)*Math.cos(u)*rr, y:Math.cos(v)*rr*0.86, z:Math.sin(v)*Math.sin(u)*rr,
+      s:0.60+Math.random()*1.55,
+      a:0.42+Math.random()*0.58,
+      ph:Math.random()*TAU,
+      c: tone>0.93 ? 'rgb(188,210,255)' : (tone>0.72 ? 'rgb(255,255,255)' : 'rgb(246,228,203)')
     });
-  });
+  }
+
+  /* ── Precarga de los PNG (núcleo y nodos) ── */
+  function load(o){ if(o&&o.src){ o._im=new Image(); o._im.decoding='async'; o._im.src=o.src; } }
+  load(cfg.core); cfg.nodes.forEach(load);
+  function ready(o){ return o&&o._im&&o._im.complete&&o._im.naturalWidth>0; }
 
   function size(){
     DPR=Math.min(window.devicePixelRatio||1,2);
@@ -1506,19 +1481,28 @@ function makeGalaxy(cv, cfg){
     ctx.setTransform(DPR,0,0,DPR,0,0);
     cx=W/2; cy=H*(cfg.coreY||0.5);
   }
-  function proj(x,y,z,rr){
+  function proj(x,y,z,rr,sc){
     var s1=Math.sin(rr),c1=Math.cos(rr);
     var X=x*c1-z*s1, Z=x*s1+z*c1;
     var ct=Math.cos(TILT),st=Math.sin(TILT);
     var Y=y*ct-Z*st, Z2=y*st+Z*ct;
     var f=FOV/(FOV+Z2+2.4);
-    var sc=Math.min(W*cfg.spreadW, H*cfg.spreadH);
-    return {x:cx+X*f*sc, y:cy+Y*f*sc, f:f, z:Z2};
+    var k=(sc||SC);
+    return {x:cx+X*f*k, y:cy+Y*f*k, f:f, z:Z2};
   }
-  /* Punto del brazo espiral a un radio dado */
-  function armPoint(arm,r,off){
-    var th=arm*(Math.PI*2/ARMS)+r*TWIST+off;
-    return {x:Math.cos(th)*r, z:Math.sin(th)*r};
+  var SC=1, SCS=1;
+  function scale(){
+    /* anillos y logos: acotados a la banda, para no invadir el texto */
+    var band=cfg.band||H;
+    SC=Math.min(W*cfg.spreadW, band*cfg.spreadH);
+    /* estrellas: ocupan todo el lienzo, como el campo de fondo */
+    SCS=Math.min(W*0.42, H*0.50);
+    cy = (cfg.coreBottom!=null) ? H-cfg.coreBottom : H*(cfg.coreY||0.5);
+  }
+
+  /* Posición sobre un anillo inclinado */
+  function onRing(ring,ang){
+    return {x:Math.cos(ang)*ring.r, y:Math.sin(ang)*Math.sin(ring.inc)*ring.r*0.9, z:Math.sin(ang)*ring.r*Math.cos(ring.inc)};
   }
   function rrect(x,y,w,h,r){
     ctx.beginPath();
@@ -1530,208 +1514,175 @@ function makeGalaxy(cv, cfg){
 
   function draw(now){
     if(!W||!H){ size(); raf=requestAnimationFrame(draw); return; }
-    ctx.clearRect(0,0,W,H);   /* transparente: el fondo lo pone la sección */
+    scale();
+    ctx.clearRect(0,0,W,H);
 
-    /* Estrellas */
-    for(var i=0;i<DUST.length;i++){
-      var st=DUST[i], tw=0.6+0.4*Math.sin(now*0.0011+i);
-      ctx.globalAlpha=st.a*tw*0.85; ctx.fillStyle=(i%4===0)?'#bcd2ff':'#f2e2cd';
-      ctx.fillRect(st.x*W,st.y*H,st.s,st.s);
-    }
-    ctx.globalAlpha=1;
-
-    if(!reduce&&!drag.on) rot+=0.0009;
+    if(!reduce&&!drag.on) rot+=0.00085;
     rot+=drag.vx; drag.vx*=0.94;
 
     var core=proj(0,0,0,rot);
 
-    /* Resplandor del núcleo */
-    var cg=ctx.createRadialGradient(core.x,core.y,0,core.x,core.y,Math.min(W,H)*0.34);
-    cg.addColorStop(0,'rgba(255,196,126,0.46)');
-    cg.addColorStop(0.32,'rgba(255,132,48,0.16)');
-    cg.addColorStop(1,'rgba(200,90,30,0)');
-    ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(core.x,core.y,Math.min(W,H)*0.34,0,6.284); ctx.fill();
+    /* ── Resplandor del núcleo ── */
+    var gR=Math.min(W,H)*0.42;
+    var g=ctx.createRadialGradient(core.x,core.y,0,core.x,core.y,gR);
+    g.addColorStop(0,'rgba(255,196,128,0.42)');
+    g.addColorStop(0.22,'rgba(255,138,54,0.16)');
+    g.addColorStop(0.55,'rgba(150,90,180,0.07)');
+    g.addColorStop(1,'rgba(90,60,120,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(core.x,core.y,gR,0,TAU); ctx.fill();
 
-    /* Bruma del disco, achatada por la inclinación */
-    ctx.save();
-    ctx.translate(core.x,core.y); ctx.scale(1,Math.max(0.18,Math.cos(TILT)));
-    var hz=Math.min(W*cfg.spreadW,H*cfg.spreadH)*2.3;
-    var hazeG=ctx.createRadialGradient(0,0,hz*0.06,0,0,hz);
-    hazeG.addColorStop(0,'rgba(255,186,110,0.16)');
-    hazeG.addColorStop(0.45,'rgba(214,110,48,0.07)');
-    hazeG.addColorStop(1,'rgba(120,60,30,0)');
-    ctx.fillStyle=hazeG; ctx.beginPath(); ctx.arc(0,0,hz,0,6.284); ctx.fill();
-    ctx.restore();
-
-    /* Partículas de los brazos */
+    /* ── Estrellas ── */
     ctx.globalCompositeOperation='lighter';
-    for(var q=0;q<P.length;q++){
-      var pa=P[q];
-      var th=pa.th+(reduce?0:now*0.000045/(0.30+pa.r));
-      var pt=proj(Math.cos(th)*pa.r+pa.jx, pa.y, Math.sin(th)*pa.r+pa.jz, rot);
-      if(pt.f<=0.06) continue;
-      var dep=Math.max(0,Math.min(1,(pt.f-0.28)/0.85));
-      ctx.globalAlpha=(pa.star?0.34:0.32+0.62*dep)*pa.w;
-      ctx.fillStyle=pa.col;
-      ctx.beginPath(); ctx.arc(pt.x,pt.y,pa.s*pt.f*0.95,0,6.284); ctx.fill();
+    for(var i=0;i<STARS.length;i++){
+      var st=STARS[i], cySave=cy; cy=H*0.5; var pt=proj(st.x,st.y,st.z,rot,SCS); cy=cySave;
+      if(pt.f<=0.10) continue;
+      var tw=reduce?1:(0.62+0.38*Math.sin(now*0.0012+st.ph));
+      var dep=Math.max(0,Math.min(1,(pt.f-0.24)/0.8));
+      ctx.globalAlpha=st.a*tw*(0.42+0.58*dep);
+      ctx.fillStyle=st.c;
+      ctx.beginPath(); ctx.arc(pt.x,pt.y,st.s*pt.f,0,TAU); ctx.fill();
     }
     ctx.globalCompositeOperation='source-over';
     ctx.globalAlpha=1;
 
-    /* Nodos con etiqueta, ordenados por profundidad */
-    var pts=[];
+    /* ── Órbitas punteadas ── */
+    ctx.setLineDash([4,7]); ctx.lineDashOffset=-(now*0.012)%11;
+    ctx.strokeStyle='rgba(255,150,80,0.26)'; ctx.lineWidth=1;
+    for(var k=0;k<cfg.rings.length;k++){
+      var rg=cfg.rings[k];
+      ctx.beginPath();
+      for(var a=0;a<=72;a++){
+        var q=onRing(rg,a/72*TAU), pp=proj(q.x,q.y,q.z,rot);
+        if(a===0) ctx.moveTo(pp.x,pp.y); else ctx.lineTo(pp.x,pp.y);
+      }
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+
+    /* ── Puntos que recorren las órbitas ── */
+    for(var k2=0;k2<cfg.rings.length;k2++){
+      var rg2=cfg.rings[k2];
+      for(var d=0;d<3;d++){
+        var ang=(now*0.00013*(1-k2*0.16))+d*(TAU/3)+k2*0.7;
+        var q2=onRing(rg2,ang), dp=proj(q2.x,q2.y,q2.z,rot);
+        if(dp.f<=0.14) continue;
+        ctx.globalAlpha=Math.min(0.9,(dp.f-0.14)*1.9);
+        ctx.fillStyle='#ffc182';
+        ctx.beginPath(); ctx.arc(dp.x,dp.y,2.4*dp.f,0,TAU); ctx.fill();
+      }
+    }
+    ctx.globalAlpha=1;
+
+    /* ── Logos sobre las órbitas, de atrás hacia adelante ── */
+    var list=[];
     for(var n=0;n<cfg.nodes.length;n++){
-      var nd=cfg.nodes[n];
-      var a=nd.ph+(reduce?0:now*0.000085/(0.6+nd.r*0.35));
-      var y2=Math.sin(a)*Math.sin(nd.inc)*nd.r*0.92;
-      pts.push({nd:nd,p:proj(Math.cos(a)*nd.r, y2, Math.sin(a)*nd.r*Math.cos(nd.inc), rot)});
+      var nd=cfg.nodes[n], rg3=cfg.rings[nd.ring];
+      var ang2=nd.ph+(reduce?0:now*0.000052*(1-nd.ring*0.14));
+      var q3=onRing(rg3,ang2);
+      list.push({nd:nd,p:proj(q3.x,q3.y,q3.z,rot)});
     }
-    pts.sort(function(u,v){return v.p.z-u.p.z;});
+    list.sort(function(u,v){return v.p.z-u.p.z;});
 
-    /* Enlaces al núcleo */
-    for(var l=0;l<pts.length;l++){
-      var pp=pts[l].p;
-      var op=Math.max(0.05,Math.min(0.36,(pp.f-0.25)*0.75));
-      ctx.strokeStyle='rgba(255,150,80,'+op+')';
-      ctx.lineWidth=Math.max(0.5,pp.f*1.1);
-      ctx.setLineDash([5,5]); ctx.lineDashOffset=-(now*0.018)%10;
-      ctx.beginPath(); ctx.moveTo(core.x,core.y); ctx.lineTo(pp.x,pp.y); ctx.stroke();
-      ctx.setLineDash([]);
-    }
+    var TS=cfg.tileSize||52;
+    var occl=Math.max(46,Math.min(W,H)*(cfg.coreSize||0.115))*0.85;
+    for(var m=0;m<list.length;m++){
+      var nd2=list[m].nd, pt2=list[m].p, f=pt2.f;
+      if(f<=0.14) continue;
+      /* si pasa por detrás del núcleo, queda oculto */
+      if(pt2.z>0 && Math.hypot(pt2.x-core.x,pt2.y-core.y)<occl) continue;
+      var sz=Math.max(TS*0.55, TS*f);
+      var x=pt2.x-sz/2, y=pt2.y-sz/2;
+      ctx.globalAlpha=Math.min(1,(f-0.14)*2.6);
 
-    /* ── Logos viajando por los brazos hacia el núcleo ── */
-    var LSZ=cfg.logoSize||34;
-    for(var t=0;t<TR.length;t++){
-      var tr=TR[t];
-      if(!reduce){ tr.p+=tr.sp*16.6; if(tr.p>=1) tr.p-=1; }
-      var r=2.32-tr.p*2.16;                       /* avance parejo hacia el núcleo */
-      var ap=armPoint(tr.arm, r, tr.off);         /* carril fijo: sin zigzag */
-      var tp=proj(ap.x, 0, ap.z, rot);
-      if(tp.f<=0.10) continue;
+      /* baldosa */
+      ctx.save();
+      ctx.shadowColor='rgba(0,0,0,.55)'; ctx.shadowBlur=14*f; ctx.shadowOffsetY=3*f;
+      ctx.fillStyle=ready(nd2)?'rgba(17,24,39,.92)':'rgba(14,20,32,.92)';
+      rrect(x,y,sz,sz,sz*0.30); ctx.fill();
+      ctx.restore();
+      ctx.strokeStyle='rgba(255,255,255,.13)'; ctx.lineWidth=1;
+      rrect(x,y,sz,sz,sz*0.30); ctx.stroke();
 
-      var fade=Math.min(1,tr.p*5)*Math.min(1,(1-tr.p)*6);
-      var sz=Math.max(LSZ*0.62, LSZ*tp.f);
-      var al=Math.max(0,fade)*Math.min(1,(tp.f-0.14)*2.4);
-      if(al<=0.02) continue;
-      var x=tp.x-sz/2, y=tp.y-sz/2;
-
-      /* estela corta, sobre el mismo carril */
-      var ap2=armPoint(tr.arm, Math.min(2.32,r+0.20), tr.off);
-      var tp2=proj(ap2.x,0,ap2.z,rot);
-      ctx.globalAlpha=al*0.42;
-      ctx.strokeStyle=tr.b.c; ctx.lineWidth=1.6*tp.f; ctx.lineCap='round';
-      ctx.beginPath(); ctx.moveTo(tp2.x,tp2.y); ctx.lineTo(tp.x,tp.y); ctx.stroke();
-
-      ctx.globalAlpha=al;
-      var im=tr.im, ready=im&&im.complete&&im.naturalWidth>0;
-      if(ready){
-        /* Baldosa clara con el PNG dentro, como en el panel real */
-        ctx.save();
-        ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=11*tp.f;
-        ctx.fillStyle='rgba(255,255,255,.95)';
-        rrect(x,y,sz,sz,sz*0.26); ctx.fill();
-        ctx.restore();
-        ctx.save(); rrect(x,y,sz,sz,sz*0.26); ctx.clip();
-        var pad=sz*0.17;
-        ctx.drawImage(im,x+pad,y+pad,sz-pad*2,sz-pad*2);
+      if(ready(nd2)){
+        ctx.save(); rrect(x,y,sz,sz,sz*0.30); ctx.clip();
+        var pad=sz*0.20;
+        ctx.drawImage(nd2._im,x+pad,y+pad,sz-pad*2,sz-pad*2);
         ctx.restore();
       }else{
-        /* Sin PNG todavía: baldosa de color con la inicial */
-        ctx.save();
-        ctx.shadowColor=tr.b.c; ctx.shadowBlur=13*tp.f;
-        ctx.fillStyle=tr.b.c;
-        rrect(x,y,sz,sz,sz*0.26); ctx.fill();
-        ctx.restore();
-        ctx.fillStyle='#fff';
-        ctx.font='800 '+Math.round(sz*0.52)+'px Inter, system-ui, sans-serif';
+        ctx.fillStyle=nd2.c;
+        ctx.font='800 '+Math.round(sz*0.44)+'px Inter, system-ui, sans-serif';
         ctx.textAlign='center'; ctx.textBaseline='middle';
-        ctx.fillText(tr.b.l, tp.x, tp.y+0.5);
+        ctx.fillText(nd2.l, pt2.x, pt2.y+0.5);
       }
-      /* Borde suave para que despegue del fondo */
-      ctx.globalAlpha=al*0.6;
-      ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=1;
-      rrect(x,y,sz,sz,sz*0.26); ctx.stroke();
-      ctx.globalAlpha=1;
-    }
 
-    /* Nodos y etiquetas */
-    for(var m=0;m<pts.length;m++){
-      var nd2=pts[m].nd, q2=pts[m].p, f=q2.f, rd=Math.max(3.2,7.0*f);
-      ctx.globalAlpha=Math.max(0.3,Math.min(1,(f-0.2)*1.6));
-      var hg=ctx.createRadialGradient(q2.x,q2.y,0,q2.x,q2.y,rd*3.4);
-      hg.addColorStop(0,nd2.c+'aa'); hg.addColorStop(1,nd2.c+'00');
-      ctx.fillStyle=hg; ctx.beginPath(); ctx.arc(q2.x,q2.y,rd*3.4,0,6.284); ctx.fill();
-      ctx.fillStyle=nd2.c; ctx.beginPath(); ctx.arc(q2.x,q2.y,rd,0,6.284); ctx.fill();
-      ctx.strokeStyle='rgba(255,255,255,.85)'; ctx.lineWidth=1.1; ctx.stroke();
-      if(f>0.42){
-        ctx.globalAlpha=Math.min(1,(f-0.42)*3.1);
-        ctx.font='600 '+Math.max(9,Math.round(11.5*f))+'px Inter, system-ui, sans-serif';
-        ctx.textAlign='center'; ctx.textBaseline='top';
-        ctx.save();
-        ctx.shadowColor='rgba(8,14,25,.9)'; ctx.shadowBlur=6;
-        ctx.fillStyle='rgba(8,14,25,.9)';
-        ctx.fillText(nd2.n,q2.x,q2.y+rd+6);
-        ctx.restore();
-        ctx.fillStyle='rgba(238,244,255,.95)';
-        ctx.fillText(nd2.n,q2.x,q2.y+rd+6);
+      /* etiqueta en pastilla */
+      if(f>0.40){
+        ctx.globalAlpha=Math.min(1,(f-0.40)*3.2);
+        var fs=Math.max(10,Math.round(12.5*f));
+        ctx.font='600 '+fs+'px Inter, system-ui, sans-serif';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        var tw2=ctx.measureText(nd2.n).width, pw=tw2+16, ph2=fs+10;
+        var ly=pt2.y+sz/2+ph2/2+8;
+        ctx.fillStyle='rgba(10,16,28,.72)';
+        rrect(pt2.x-pw/2,ly-ph2/2,pw,ph2,ph2/2); ctx.fill();
+        ctx.fillStyle='rgba(238,244,255,.94)';
+        ctx.fillText(nd2.n, pt2.x, ly+0.5);
       }
       ctx.globalAlpha=1;
     }
 
-    /* Anillo de acreción: le da estructura al centro */
-    var arS=Math.min(W*cfg.spreadW,H*cfg.spreadH);
+    /* ── Núcleo: baldosa oscura sobre el resplandor ── */
+    var cs=Math.max(46,Math.min(W,H)*(cfg.coreSize||0.115));
+    var pulse=1+(reduce?0:0.02*Math.sin(now*0.0015));
+    var cxr=core.x-cs*pulse/2, cyr=core.y-cs*pulse/2, cw=cs*pulse;
     ctx.save();
-    ctx.translate(core.x,core.y); ctx.scale(1,Math.max(0.16,Math.cos(TILT)));
-    ctx.globalCompositeOperation='lighter';
-    [[0.62,'rgba(255,208,150,0.20)',1.6],[0.86,'rgba(255,158,86,0.13)',1.2],[1.18,'rgba(226,116,52,0.08)',1.0]]
-      .forEach(function(r){
-        ctx.strokeStyle=r[1]; ctx.lineWidth=r[2];
-        ctx.beginPath(); ctx.arc(0,0,arS*r[0],0,6.284); ctx.stroke();
-      });
+    ctx.shadowColor='rgba(255,146,54,.85)'; ctx.shadowBlur=44;
+    ctx.fillStyle='rgba(15,21,34,.95)';
+    rrect(cxr,cyr,cw,cw,cw*0.30); ctx.fill();
     ctx.restore();
-    ctx.globalCompositeOperation='source-over';
+    ctx.strokeStyle='rgba(255,168,92,.45)'; ctx.lineWidth=1.5;
+    rrect(cxr,cyr,cw,cw,cw*0.30); ctx.stroke();
 
-    /* Núcleo */
-    var cr=Math.max(15,Math.min(W,H)*cfg.coreR);
-    var pulse=1+(reduce?0:0.045*Math.sin(now*0.0016));
-    ctx.save();
-    ctx.shadowColor='rgba(255,140,50,.95)'; ctx.shadowBlur=36;
-    var kg=ctx.createRadialGradient(core.x-cr*0.3,core.y-cr*0.35,cr*0.1,core.x,core.y,cr*pulse);
-    kg.addColorStop(0,'#fff6ec'); kg.addColorStop(0.42,'#ffb066'); kg.addColorStop(1,'#e8590c');
-    ctx.fillStyle=kg; ctx.beginPath(); ctx.arc(core.x,core.y,cr*pulse,0,6.284); ctx.fill();
-    ctx.restore();
-    ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=1.4;
-    ctx.beginPath(); ctx.arc(core.x,core.y,cr*pulse,0,6.284); ctx.stroke();
-    ctx.font='900 '+Math.round(cr*0.8)+'px Inter, system-ui, sans-serif';
+    if(ready(cfg.core)){
+      ctx.save(); rrect(cxr,cyr,cw,cw,cw*0.30); ctx.clip();
+      var cp=cw*0.20;
+      ctx.drawImage(cfg.core._im,cxr+cp,cyr+cp,cw-cp*2,cw-cp*2);
+      ctx.restore();
+    }else{
+      var lg=ctx.createLinearGradient(cxr,cyr,cxr+cw,cyr+cw);
+      lg.addColorStop(0,'#ffcf9a'); lg.addColorStop(1,'#ff7a1a');
+      ctx.fillStyle=lg;
+      ctx.font='900 '+Math.round(cw*0.46)+'px Inter, system-ui, sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(cfg.core.letter, core.x, core.y+1);
+    }
+
+    /* etiqueta del núcleo */
+    var cfs=cfg.core.size||13;
+    ctx.font='700 '+cfs+'px Inter, system-ui, sans-serif';
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillStyle='#3b1400'; ctx.fillText(cfg.core.letter,core.x,core.y+1);
-    ctx.font='700 '+(cfg.core.size||12)+'px Inter, system-ui, sans-serif';
-    ctx.textBaseline='top';
-    ctx.save();
-    ctx.shadowColor='rgba(8,14,25,.95)'; ctx.shadowBlur=8;
-    ctx.fillStyle='rgba(8,14,25,.95)';
-    ctx.fillText(cfg.core.label,core.x,core.y+cr+13);
-    ctx.restore();
+    var ctw=ctx.measureText(cfg.core.label).width, cpw=ctw+18, cph=cfs+11;
+    var cly=core.y+cw/2+cph/2+10;
+    ctx.fillStyle='rgba(10,16,28,.78)';
+    rrect(core.x-cpw/2,cly-cph/2,cpw,cph,cph/2); ctx.fill();
     ctx.fillStyle='#fff';
-    ctx.fillText(cfg.core.label,core.x,core.y+cr+13);
+    ctx.fillText(cfg.core.label, core.x, cly+0.5);
 
     raf=requestAnimationFrame(draw);
   }
 
-  /* Arrastrar para girar */
   function down(e){drag.on=true;drag.x=(e.touches?e.touches[0].clientX:e.clientX);}
-  function move(e){ if(!drag.on)return; var x=(e.touches?e.touches[0].clientX:e.clientX); drag.vx=(x-drag.x)*0.0032; drag.x=x; }
+  function move(e){ if(!drag.on)return; var x=(e.touches?e.touches[0].clientX:e.clientX); drag.vx=(x-drag.x)*0.0030; drag.x=x; }
   function up(){drag.on=false;}
   cv.addEventListener('mousedown',down); cv.addEventListener('touchstart',down,{passive:true});
   window.addEventListener('mousemove',move); cv.addEventListener('touchmove',move,{passive:true});
   window.addEventListener('mouseup',up); window.addEventListener('touchend',up);
 
   size(); window.addEventListener('resize',size);
-  /* No gastar batería cuando la galaxia no se ve */
   if('IntersectionObserver' in window){
     new IntersectionObserver(function(en){
       en.forEach(function(x){
-        if(x.isIntersecting && !raf){ raf=requestAnimationFrame(draw); }
+        if(x.isIntersecting && !raf) raf=requestAnimationFrame(draw);
         else if(!x.isIntersecting && raf){ cancelAnimationFrame(raf); raf=null; }
       });
     },{threshold:0}).observe(cv);
@@ -1740,61 +1691,44 @@ function makeGalaxy(cv, cfg){
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   LOGOS QUE VIAJAN POR LA GALAXIA
-   Para usar los PNG reales: pon la ruta en `src`. Mientras `src` esté
-   vacío se dibuja la baldosa de color con la inicial.
-   Ideal: PNG cuadrado con fondo transparente, 128×128 o más.
+   LOGOS DE LA GALAXIA
+   Para usar los PNG reales: pon la ruta en `src`. Mientras esté
+   vacío se dibuja la baldosa con la inicial en el color de marca.
+   Ideal: PNG cuadrado, fondo transparente, 128×128 o más.
    ═══════════════════════════════════════════════════════════════ */
-var LOGOS=[
-  {l:'M',c:'#0866FF',src:''},   /* Meta Ads    → /assets/meta.png        */
-  {l:'T',c:'#111827',src:''},   /* TikTok Ads  → /assets/tiktokads.png   */
-  {l:'S',c:'#95BF47',src:''},   /* Shopify     → /assets/shopify.png     */
-  {l:'W',c:'#25D366',src:''},   /* WhatsApp    → /assets/whatsapp.png    */
-  {l:'I',c:'#8134AF',src:''},   /* Instagram   → /assets/instagram.png   */
-  {l:'G',c:'#0F9D58',src:''},   /* Sheets      → /assets/sheets.png      */
-  {l:'S',c:'#D6483C',src:''},   /* Shalom      → /assets/shalom.png      */
-  {l:'O',c:'#F4A300',src:''},   /* Olva        → /assets/olva.png        */
-  {l:'F',c:'#8B5CF6',src:''},   /* Fenix G     → /assets/fenixg.png      */
-  {l:'A',c:'#6C5CE7',src:''},   /* Aliclik     → /assets/aliclik.png     */
-  {l:'B',c:'#0EA5E9',src:''},   /* Boxful      → /assets/boxful.png      */
-  {l:'M',c:'#7C3AED',src:''}    /* Mastershop  → /assets/mastershop.png  */
-];
+var RINGS=[{r:1.80,inc:0.00},{r:2.15,inc:0.44},{r:2.50,inc:-0.38}];
 
-/* ── Instancia 1: el hero. Nodos = tus integraciones ── */
 makeGalaxy(document.getElementById('galaxy'),{
-  density:2900, dust:240, coreY:0.765, coreR:0.045, spreadW:0.205, spreadH:0.435, tilt:0.62,
-  core:{letter:'R', label:'Rentabilify', size:13},
-  travelers:LOGOS.slice(0,7), logoSize:38,
+  stars:1500, coreBottom:235, band:430, coreSize:0.10, spreadW:0.205, spreadH:0.52, tilt:0.36, tileSize:52,
+  core:{letter:'R', label:'Rentabilify', size:13, src:''},   /* → /assets/logo-icon.png */
+  rings:RINGS,
   nodes:[
-    {n:'Meta Ads',     c:'#4c9bff', r:1.02, inc: 0.00, ph:0.00},
-    {n:'TikTok Ads',   c:'#8ea3c8', r:1.02, inc: 0.00, ph:2.09},
-    {n:'Shopify',      c:'#a9dc6a', r:1.02, inc: 0.00, ph:4.19},
-    {n:'WhatsApp API', c:'#4ce08a', r:1.52, inc: 0.80, ph:0.75},
-    {n:'Instagram',    c:'#b98cff', r:1.52, inc: 0.80, ph:2.85},
-    {n:'Google Sheets',c:'#4bd48e', r:1.52, inc: 0.80, ph:4.95},
-    {n:'Shalom',       c:'#f2705c', r:1.98, inc:-0.72, ph:0.35},
-    {n:'Olva',         c:'#ffc861', r:1.98, inc:-0.72, ph:1.92},
-    {n:'Fenix G',      c:'#b79bff', r:1.98, inc:-0.72, ph:3.49},
-    {n:'Aliclik',      c:'#9d8dff', r:1.98, inc:-0.72, ph:5.06}
+    {n:'Meta Ads',      l:'M', c:'#4c9bff', ring:0, ph:0.00, src:''},  /* → /assets/meta.png       */
+    {n:'TikTok Ads',    l:'T', c:'#e8edf5', ring:0, ph:2.09, src:''},  /* → /assets/tiktokads.png  */
+    {n:'Shopify',       l:'S', c:'#a9dc6a', ring:0, ph:4.19, src:''},  /* → /assets/shopify.png    */
+    {n:'WhatsApp API',  l:'W', c:'#4ce08a', ring:1, ph:0.80, src:''},  /* → /assets/whatsapp.png   */
+    {n:'Instagram',     l:'I', c:'#c79bff', ring:1, ph:2.90, src:''},  /* → /assets/instagram.png  */
+    {n:'Google Sheets', l:'G', c:'#4bd48e', ring:1, ph:5.00, src:''},  /* → /assets/sheets.png     */
+    {n:'Shalom',        l:'S', c:'#f2705c', ring:2, ph:0.40, src:''},  /* → /assets/shalom.png     */
+    {n:'Olva',          l:'O', c:'#ffc861', ring:2, ph:2.49, src:''},  /* → /assets/olva.png       */
+    {n:'Fenix G',       l:'F', c:'#b79bff', ring:2, ph:4.58, src:''}   /* → /assets/fenixg.png     */
   ]
 });
 
-/* ── Instancia 2: El Cerebro. Mismos brazos, nodos = lo que sabe de tu operación ── */
 makeGalaxy(document.getElementById('brainGalaxy'),{
-  density:3200, dust:200, coreY:0.5, coreR:0.055, spreadW:0.30, spreadH:0.70, tilt:0.50,
-  core:{letter:'R', label:'Bot Rentabilify', size:14},
-  travelers:LOGOS.slice(0,9), logoSize:44,
+  stars:1700, coreY:0.5, coreSize:0.115, spreadW:0.225, spreadH:0.52, tilt:0.42, tileSize:56,
+  core:{letter:'R', label:'Bot Rentabilify', size:14, src:''},
+  rings:RINGS,
   nodes:[
-    {n:'Pedidos',        c:'#ffb066', r:1.05, inc: 0.00, ph:0.00},
-    {n:'Cobertura COD',  c:'#4ce08a', r:1.05, inc: 0.00, ph:2.09},
-    {n:'Catálogo',       c:'#a9dc6a', r:1.05, inc: 0.00, ph:4.19},
-    {n:'Tasa de rechazo',c:'#f2705c', r:1.55, inc: 0.78, ph:0.62},
-    {n:'CPA real',       c:'#4c9bff', r:1.55, inc: 0.78, ph:2.72},
-    {n:'Campañas',       c:'#ffd06b', r:1.55, inc: 0.78, ph:4.82},
-    {n:'Couriers',       c:'#ffc861', r:2.00, inc:-0.70, ph:0.30},
-    {n:'Clientes',       c:'#b79bff', r:2.00, inc:-0.70, ph:1.87},
-    {n:'Comisiones',     c:'#7fd4ff', r:2.00, inc:-0.70, ph:3.44},
-    {n:'Devoluciones',   c:'#e8a06a', r:2.00, inc:-0.70, ph:5.01}
+    {n:'Pedidos',         l:'P', c:'#ffb066', ring:0, ph:0.00, src:''},
+    {n:'Cobertura COD',   l:'C', c:'#4ce08a', ring:0, ph:2.09, src:''},
+    {n:'Catálogo',        l:'K', c:'#a9dc6a', ring:0, ph:4.19, src:''},
+    {n:'CPA real',        l:'$', c:'#4c9bff', ring:1, ph:0.80, src:''},
+    {n:'Tasa de rechazo', l:'%', c:'#f2705c', ring:1, ph:2.90, src:''},
+    {n:'Campañas',        l:'A', c:'#ffd06b', ring:1, ph:5.00, src:''},
+    {n:'Couriers',        l:'E', c:'#ffc861', ring:2, ph:0.40, src:''},
+    {n:'Clientes',        l:'U', c:'#b79bff', ring:2, ph:2.49, src:''},
+    {n:'Comisiones',      l:'S', c:'#7fd4ff', ring:2, ph:4.58, src:''}
   ]
 });
 
