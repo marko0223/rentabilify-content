@@ -1481,10 +1481,21 @@ function makeGalaxy(cv, cfg){
   var DUST=[];
   for(var d=0;d<cfg.dust;d++) DUST.push({x:Math.random(),y:Math.random(),s:Math.random()*1.3+0.25,a:Math.random()*0.45+0.12});
 
-  /* Logos que viajan por los brazos hacia el núcleo */
+  /* Logos que viajan por los brazos hacia el núcleo.
+     Cada uno tiene un desfase FIJO en el brazo: se desplazan sólo hacia
+     adentro, y el giro se lo da la galaxia entera. Antes llevaban además
+     una rotación diferencial propia y eso los hacía zigzaguear. */
   var TR=[];
   cfg.travelers.forEach(function(b,i){
-    TR.push({b:b, arm:i%ARMS, p:Math.random(), sp:0.00006+Math.random()*0.00007, off:(Math.random()-0.5)*0.30});
+    var im=null;
+    if(b.src){ im=new Image(); im.decoding='async'; im.src=b.src; }
+    TR.push({
+      b:b, im:im,
+      arm:i%ARMS,
+      p:i/cfg.travelers.length,                 /* repartidos, no amontonados */
+      sp:0.000034+Math.random()*0.000018,       /* ~12-18 s de recorrido */
+      off:(i%3-1)*0.16 + (Math.random()-0.5)*0.10   /* carril fijo dentro del brazo */
+    });
   });
 
   function size(){
@@ -1589,37 +1600,57 @@ function makeGalaxy(cv, cfg){
     }
 
     /* ── Logos viajando por los brazos hacia el núcleo ── */
+    var LSZ=cfg.logoSize||34;
     for(var t=0;t<TR.length;t++){
       var tr=TR[t];
-      if(!reduce) tr.p+=tr.sp*16.6;
-      if(tr.p>=1){ tr.p=0; }
-      var ease=1-Math.pow(1-tr.p,1.7);
-      var r=2.35-ease*2.20;                       /* del borde al núcleo */
-      var ap=armPoint(tr.arm, r, tr.off+(reduce?0:now*0.000045/(0.30+r)));
-      var tp=proj(ap.x, (Math.random()-0.5)*0.001, ap.z, rot);
+      if(!reduce){ tr.p+=tr.sp*16.6; if(tr.p>=1) tr.p-=1; }
+      var r=2.32-tr.p*2.16;                       /* avance parejo hacia el núcleo */
+      var ap=armPoint(tr.arm, r, tr.off);         /* carril fijo: sin zigzag */
+      var tp=proj(ap.x, 0, ap.z, rot);
       if(tp.f<=0.10) continue;
 
-      var fade=Math.min(1,tr.p*6)*Math.min(1,(1-tr.p)*7);   /* aparece y se funde */
-      var sz=Math.max(11,20*tp.f);
-      ctx.globalAlpha=Math.max(0,fade)*Math.min(1,(tp.f-0.16)*2.2);
+      var fade=Math.min(1,tr.p*5)*Math.min(1,(1-tr.p)*6);
+      var sz=Math.max(LSZ*0.62, LSZ*tp.f);
+      var al=Math.max(0,fade)*Math.min(1,(tp.f-0.14)*2.4);
+      if(al<=0.02) continue;
+      var x=tp.x-sz/2, y=tp.y-sz/2;
 
-      /* estela */
-      var ap2=armPoint(tr.arm, Math.min(2.35,r+0.16), tr.off+(reduce?0:now*0.000045/(0.30+r)));
+      /* estela corta, sobre el mismo carril */
+      var ap2=armPoint(tr.arm, Math.min(2.32,r+0.20), tr.off);
       var tp2=proj(ap2.x,0,ap2.z,rot);
-      ctx.strokeStyle=tr.b.c; ctx.lineWidth=1.4*tp.f; ctx.globalAlpha*=0.5;
+      ctx.globalAlpha=al*0.42;
+      ctx.strokeStyle=tr.b.c; ctx.lineWidth=1.6*tp.f; ctx.lineCap='round';
       ctx.beginPath(); ctx.moveTo(tp2.x,tp2.y); ctx.lineTo(tp.x,tp.y); ctx.stroke();
-      ctx.globalAlpha/=0.5;
 
-      /* chip del logo */
-      ctx.save();
-      ctx.shadowColor=tr.b.c; ctx.shadowBlur=12*tp.f;
-      ctx.fillStyle=tr.b.c;
-      rrect(tp.x-sz/2, tp.y-sz/2, sz, sz, sz*0.28); ctx.fill();
-      ctx.restore();
-      ctx.fillStyle='#fff';
-      ctx.font='800 '+Math.round(sz*0.56)+'px Inter, system-ui, sans-serif';
-      ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText(tr.b.l, tp.x, tp.y+0.5);
+      ctx.globalAlpha=al;
+      var im=tr.im, ready=im&&im.complete&&im.naturalWidth>0;
+      if(ready){
+        /* Baldosa clara con el PNG dentro, como en el panel real */
+        ctx.save();
+        ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=11*tp.f;
+        ctx.fillStyle='rgba(255,255,255,.95)';
+        rrect(x,y,sz,sz,sz*0.26); ctx.fill();
+        ctx.restore();
+        ctx.save(); rrect(x,y,sz,sz,sz*0.26); ctx.clip();
+        var pad=sz*0.17;
+        ctx.drawImage(im,x+pad,y+pad,sz-pad*2,sz-pad*2);
+        ctx.restore();
+      }else{
+        /* Sin PNG todavía: baldosa de color con la inicial */
+        ctx.save();
+        ctx.shadowColor=tr.b.c; ctx.shadowBlur=13*tp.f;
+        ctx.fillStyle=tr.b.c;
+        rrect(x,y,sz,sz,sz*0.26); ctx.fill();
+        ctx.restore();
+        ctx.fillStyle='#fff';
+        ctx.font='800 '+Math.round(sz*0.52)+'px Inter, system-ui, sans-serif';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(tr.b.l, tp.x, tp.y+0.5);
+      }
+      /* Borde suave para que despegue del fondo */
+      ctx.globalAlpha=al*0.6;
+      ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=1;
+      rrect(x,y,sz,sz,sz*0.26); ctx.stroke();
       ctx.globalAlpha=1;
     }
 
@@ -1708,18 +1739,32 @@ function makeGalaxy(cv, cfg){
   raf=requestAnimationFrame(draw);
 }
 
-/* Logos que viajan por los brazos */
+/* ═══════════════════════════════════════════════════════════════
+   LOGOS QUE VIAJAN POR LA GALAXIA
+   Para usar los PNG reales: pon la ruta en `src`. Mientras `src` esté
+   vacío se dibuja la baldosa de color con la inicial.
+   Ideal: PNG cuadrado con fondo transparente, 128×128 o más.
+   ═══════════════════════════════════════════════════════════════ */
 var LOGOS=[
-  {l:'M',c:'#0866FF'},{l:'T',c:'#111827'},{l:'S',c:'#95BF47'},{l:'W',c:'#25D366'},
-  {l:'I',c:'#8134AF'},{l:'G',c:'#0F9D58'},{l:'S',c:'#D6483C'},{l:'O',c:'#F4A300'},
-  {l:'F',c:'#8B5CF6'},{l:'A',c:'#6C5CE7'},{l:'B',c:'#0EA5E9'},{l:'M',c:'#7C3AED'}
+  {l:'M',c:'#0866FF',src:''},   /* Meta Ads    → /assets/meta.png        */
+  {l:'T',c:'#111827',src:''},   /* TikTok Ads  → /assets/tiktokads.png   */
+  {l:'S',c:'#95BF47',src:''},   /* Shopify     → /assets/shopify.png     */
+  {l:'W',c:'#25D366',src:''},   /* WhatsApp    → /assets/whatsapp.png    */
+  {l:'I',c:'#8134AF',src:''},   /* Instagram   → /assets/instagram.png   */
+  {l:'G',c:'#0F9D58',src:''},   /* Sheets      → /assets/sheets.png      */
+  {l:'S',c:'#D6483C',src:''},   /* Shalom      → /assets/shalom.png      */
+  {l:'O',c:'#F4A300',src:''},   /* Olva        → /assets/olva.png        */
+  {l:'F',c:'#8B5CF6',src:''},   /* Fenix G     → /assets/fenixg.png      */
+  {l:'A',c:'#6C5CE7',src:''},   /* Aliclik     → /assets/aliclik.png     */
+  {l:'B',c:'#0EA5E9',src:''},   /* Boxful      → /assets/boxful.png      */
+  {l:'M',c:'#7C3AED',src:''}    /* Mastershop  → /assets/mastershop.png  */
 ];
 
 /* ── Instancia 1: el hero. Nodos = tus integraciones ── */
 makeGalaxy(document.getElementById('galaxy'),{
   density:2900, dust:240, coreY:0.765, coreR:0.045, spreadW:0.205, spreadH:0.435, tilt:0.62,
   core:{letter:'R', label:'Rentabilify', size:13},
-  travelers:LOGOS.slice(0,9),
+  travelers:LOGOS.slice(0,7), logoSize:38,
   nodes:[
     {n:'Meta Ads',     c:'#4c9bff', r:1.02, inc: 0.00, ph:0.00},
     {n:'TikTok Ads',   c:'#8ea3c8', r:1.02, inc: 0.00, ph:2.09},
@@ -1738,7 +1783,7 @@ makeGalaxy(document.getElementById('galaxy'),{
 makeGalaxy(document.getElementById('brainGalaxy'),{
   density:3200, dust:200, coreY:0.5, coreR:0.055, spreadW:0.30, spreadH:0.70, tilt:0.50,
   core:{letter:'R', label:'Bot Rentabilify', size:14},
-  travelers:LOGOS,
+  travelers:LOGOS.slice(0,9), logoSize:44,
   nodes:[
     {n:'Pedidos',        c:'#ffb066', r:1.05, inc: 0.00, ph:0.00},
     {n:'Cobertura COD',  c:'#4ce08a', r:1.05, inc: 0.00, ph:2.09},
