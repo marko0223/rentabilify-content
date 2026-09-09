@@ -261,7 +261,7 @@ section{padding:56px 0;}
 .c-meta{background:#0866FF;}.c-tiktok{background:#0b0b0b;}.c-shopify{background:#95BF47;}
 .c-wa{background:#25D366;}.c-sheets{background:#0F9D58;}.c-shalom{background:#E63946;}
 .c-olva{background:#F4A300;}.c-fenix{background:#8B5CF6;}.c-aliclik{background:#6C5CE7;}
-.c-boxful{background:#0EA5E9;}.c-master{background:#EC4899;}.c-ig{background:linear-gradient(135deg,#F58529,#DD2A7B,#8134AF);}
+.c-boxful{background:#0EA5E9;}.c-master{background:#7C3AED;}.c-ig{background:linear-gradient(135deg,#F58529,#DD2A7B,#8134AF);}
 
 /* ═══════════════════════ SECCIÓN OSCURA (CEREBRO) ═══════════════════════ */
 .dark-sec{position:relative;overflow:hidden;background:hsl(var(--stage));color:hsl(var(--stage-fg));}
@@ -1451,7 +1451,16 @@ function makeGalaxy(cv, cfg){
   var ctx=cv.getContext('2d'), W=0,H=0,DPR=1,cx=0,cy=0;
   var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   var ARMS=3, TWIST=1.85, TILT=cfg.tilt||0.58, FOV=3.1;
-  var rot=0, drag={on:false,x:0,vx:0}, raf=null, visible=true;
+  var rot=0, drag={on:false,x:0,vx:0}, raf=null;
+
+  /* Paleta de la galaxia: del núcleo crema a la brasa del borde.
+     Nada de azules altos en los brazos — ahí es donde salía el magenta. */
+  var STOPS=[[255,246,232],[255,206,142],[255,150,72],[214,96,34],[150,58,22]];
+  function ramp(t){
+    t=Math.min(0.9999,Math.max(0,t))*(STOPS.length-1);
+    var i=Math.floor(t), f=t-i, a=STOPS[i], b=STOPS[i+1];
+    return 'rgb('+Math.round(a[0]+(b[0]-a[0])*f)+','+Math.round(a[1]+(b[1]-a[1])*f)+','+Math.round(a[2]+(b[2]-a[2])*f)+')';
+  }
 
   /* Brazos espirales */
   var P=[];
@@ -1459,8 +1468,14 @@ function makeGalaxy(cv, cfg){
     var arm=i%ARMS, t=Math.pow(Math.random(),0.62), rad=0.18+t*2.30;
     var th=arm*(Math.PI*2/ARMS)+rad*TWIST+(Math.random()-0.5)*0.55/(0.25+rad);
     var sp=0.055+rad*0.045;
+    var star=Math.random()>0.90;                    /* chispa fría, para que respire */
+    var shade=Math.random()*0.22-0.11;              /* variación de brillo, no de tono */
     P.push({r:rad,th:th,y:(Math.random()-0.5)*sp*2,jx:(Math.random()-0.5)*sp,jz:(Math.random()-0.5)*sp,
-            s:Math.random()*1.7+0.42,w:0.28+Math.random()*0.72});
+            s:(Math.random()*1.5+0.40)*(1.35-rad*0.28),
+            w:0.30+Math.random()*0.70,
+            hot:star?0:Math.max(0,Math.min(1,rad/2.45+shade)),
+            col:star?'rgb(198,219,255)':ramp(Math.max(0,Math.min(1,rad/2.45+shade))),
+            star:star});
   }
   /* Estrellas de fondo */
   var DUST=[];
@@ -1509,7 +1524,7 @@ function makeGalaxy(cv, cfg){
     /* Estrellas */
     for(var i=0;i<DUST.length;i++){
       var st=DUST[i], tw=0.6+0.4*Math.sin(now*0.0011+i);
-      ctx.globalAlpha=st.a*tw; ctx.fillStyle='#cfe0ff';
+      ctx.globalAlpha=st.a*tw*0.85; ctx.fillStyle=(i%4===0)?'#bcd2ff':'#f2e2cd';
       ctx.fillRect(st.x*W,st.y*H,st.s,st.s);
     }
     ctx.globalAlpha=1;
@@ -1521,10 +1536,21 @@ function makeGalaxy(cv, cfg){
 
     /* Resplandor del núcleo */
     var cg=ctx.createRadialGradient(core.x,core.y,0,core.x,core.y,Math.min(W,H)*0.34);
-    cg.addColorStop(0,'rgba(255,168,86,0.50)');
-    cg.addColorStop(0.35,'rgba(255,116,26,0.17)');
-    cg.addColorStop(1,'rgba(255,107,26,0)');
+    cg.addColorStop(0,'rgba(255,196,126,0.46)');
+    cg.addColorStop(0.32,'rgba(255,132,48,0.16)');
+    cg.addColorStop(1,'rgba(200,90,30,0)');
     ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(core.x,core.y,Math.min(W,H)*0.34,0,6.284); ctx.fill();
+
+    /* Bruma del disco, achatada por la inclinación */
+    ctx.save();
+    ctx.translate(core.x,core.y); ctx.scale(1,Math.max(0.18,Math.cos(TILT)));
+    var hz=Math.min(W*cfg.spreadW,H*cfg.spreadH)*2.3;
+    var hazeG=ctx.createRadialGradient(0,0,hz*0.06,0,0,hz);
+    hazeG.addColorStop(0,'rgba(255,186,110,0.16)');
+    hazeG.addColorStop(0.45,'rgba(214,110,48,0.07)');
+    hazeG.addColorStop(1,'rgba(120,60,30,0)');
+    ctx.fillStyle=hazeG; ctx.beginPath(); ctx.arc(0,0,hz,0,6.284); ctx.fill();
+    ctx.restore();
 
     /* Partículas de los brazos */
     ctx.globalCompositeOperation='lighter';
@@ -1534,9 +1560,8 @@ function makeGalaxy(cv, cfg){
       var pt=proj(Math.cos(th)*pa.r+pa.jx, pa.y, Math.sin(th)*pa.r+pa.jz, rot);
       if(pt.f<=0.06) continue;
       var dep=Math.max(0,Math.min(1,(pt.f-0.28)/0.85));
-      var warm=Math.max(0,1-pa.r/1.6);
-      ctx.globalAlpha=(0.24+0.58*dep)*pa.w;
-      ctx.fillStyle='rgb(255,'+Math.round(150+95*warm-pa.w*38)+','+Math.round(70+150*(1-warm)*pa.w)+')';
+      ctx.globalAlpha=(pa.star?0.34:0.32+0.62*dep)*pa.w;
+      ctx.fillStyle=pa.col;
       ctx.beginPath(); ctx.arc(pt.x,pt.y,pa.s*pt.f*0.95,0,6.284); ctx.fill();
     }
     ctx.globalCompositeOperation='source-over';
@@ -1611,11 +1636,29 @@ function makeGalaxy(cv, cfg){
         ctx.globalAlpha=Math.min(1,(f-0.42)*3.1);
         ctx.font='600 '+Math.max(9,Math.round(11.5*f))+'px Inter, system-ui, sans-serif';
         ctx.textAlign='center'; ctx.textBaseline='top';
-        ctx.fillStyle='rgba(226,236,250,.92)';
+        ctx.save();
+        ctx.shadowColor='rgba(8,14,25,.9)'; ctx.shadowBlur=6;
+        ctx.fillStyle='rgba(8,14,25,.9)';
+        ctx.fillText(nd2.n,q2.x,q2.y+rd+6);
+        ctx.restore();
+        ctx.fillStyle='rgba(238,244,255,.95)';
         ctx.fillText(nd2.n,q2.x,q2.y+rd+6);
       }
       ctx.globalAlpha=1;
     }
+
+    /* Anillo de acreción: le da estructura al centro */
+    var arS=Math.min(W*cfg.spreadW,H*cfg.spreadH);
+    ctx.save();
+    ctx.translate(core.x,core.y); ctx.scale(1,Math.max(0.16,Math.cos(TILT)));
+    ctx.globalCompositeOperation='lighter';
+    [[0.62,'rgba(255,208,150,0.20)',1.6],[0.86,'rgba(255,158,86,0.13)',1.2],[1.18,'rgba(226,116,52,0.08)',1.0]]
+      .forEach(function(r){
+        ctx.strokeStyle=r[1]; ctx.lineWidth=r[2];
+        ctx.beginPath(); ctx.arc(0,0,arS*r[0],0,6.284); ctx.stroke();
+      });
+    ctx.restore();
+    ctx.globalCompositeOperation='source-over';
 
     /* Núcleo */
     var cr=Math.max(15,Math.min(W,H)*cfg.coreR);
@@ -1632,8 +1675,14 @@ function makeGalaxy(cv, cfg){
     ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillStyle='#3b1400'; ctx.fillText(cfg.core.letter,core.x,core.y+1);
     ctx.font='700 '+(cfg.core.size||12)+'px Inter, system-ui, sans-serif';
-    ctx.textBaseline='top'; ctx.fillStyle='rgba(255,255,255,.94)';
-    ctx.fillText(cfg.core.label,core.x,core.y+cr+11);
+    ctx.textBaseline='top';
+    ctx.save();
+    ctx.shadowColor='rgba(8,14,25,.95)'; ctx.shadowBlur=8;
+    ctx.fillStyle='rgba(8,14,25,.95)';
+    ctx.fillText(cfg.core.label,core.x,core.y+cr+13);
+    ctx.restore();
+    ctx.fillStyle='#fff';
+    ctx.fillText(cfg.core.label,core.x,core.y+cr+13);
 
     raf=requestAnimationFrame(draw);
   }
@@ -1662,8 +1711,8 @@ function makeGalaxy(cv, cfg){
 /* Logos que viajan por los brazos */
 var LOGOS=[
   {l:'M',c:'#0866FF'},{l:'T',c:'#111827'},{l:'S',c:'#95BF47'},{l:'W',c:'#25D366'},
-  {l:'I',c:'#DD2A7B'},{l:'G',c:'#0F9D58'},{l:'S',c:'#E63946'},{l:'O',c:'#F4A300'},
-  {l:'F',c:'#8B5CF6'},{l:'A',c:'#6C5CE7'},{l:'B',c:'#0EA5E9'},{l:'M',c:'#EC4899'}
+  {l:'I',c:'#8134AF'},{l:'G',c:'#0F9D58'},{l:'S',c:'#D6483C'},{l:'O',c:'#F4A300'},
+  {l:'F',c:'#8B5CF6'},{l:'A',c:'#6C5CE7'},{l:'B',c:'#0EA5E9'},{l:'M',c:'#7C3AED'}
 ];
 
 /* ── Instancia 1: el hero. Nodos = tus integraciones ── */
@@ -1676,9 +1725,9 @@ makeGalaxy(document.getElementById('galaxy'),{
     {n:'TikTok Ads',   c:'#8ea3c8', r:1.02, inc: 0.00, ph:2.09},
     {n:'Shopify',      c:'#a9dc6a', r:1.02, inc: 0.00, ph:4.19},
     {n:'WhatsApp API', c:'#4ce08a', r:1.52, inc: 0.80, ph:0.75},
-    {n:'Instagram',    c:'#ff7ab8', r:1.52, inc: 0.80, ph:2.85},
+    {n:'Instagram',    c:'#b98cff', r:1.52, inc: 0.80, ph:2.85},
     {n:'Google Sheets',c:'#4bd48e', r:1.52, inc: 0.80, ph:4.95},
-    {n:'Shalom',       c:'#ff7a7a', r:1.98, inc:-0.72, ph:0.35},
+    {n:'Shalom',       c:'#f2705c', r:1.98, inc:-0.72, ph:0.35},
     {n:'Olva',         c:'#ffc861', r:1.98, inc:-0.72, ph:1.92},
     {n:'Fenix G',      c:'#b79bff', r:1.98, inc:-0.72, ph:3.49},
     {n:'Aliclik',      c:'#9d8dff', r:1.98, inc:-0.72, ph:5.06}
@@ -1694,13 +1743,13 @@ makeGalaxy(document.getElementById('brainGalaxy'),{
     {n:'Pedidos',        c:'#ffb066', r:1.05, inc: 0.00, ph:0.00},
     {n:'Cobertura COD',  c:'#4ce08a', r:1.05, inc: 0.00, ph:2.09},
     {n:'Catálogo',       c:'#a9dc6a', r:1.05, inc: 0.00, ph:4.19},
-    {n:'Tasa de rechazo',c:'#ff7a7a', r:1.55, inc: 0.78, ph:0.62},
+    {n:'Tasa de rechazo',c:'#f2705c', r:1.55, inc: 0.78, ph:0.62},
     {n:'CPA real',       c:'#4c9bff', r:1.55, inc: 0.78, ph:2.72},
-    {n:'Campañas',       c:'#ff9fd0', r:1.55, inc: 0.78, ph:4.82},
+    {n:'Campañas',       c:'#ffd06b', r:1.55, inc: 0.78, ph:4.82},
     {n:'Couriers',       c:'#ffc861', r:2.00, inc:-0.70, ph:0.30},
     {n:'Clientes',       c:'#b79bff', r:2.00, inc:-0.70, ph:1.87},
     {n:'Comisiones',     c:'#7fd4ff', r:2.00, inc:-0.70, ph:3.44},
-    {n:'Devoluciones',   c:'#ff8f6b', r:2.00, inc:-0.70, ph:5.01}
+    {n:'Devoluciones',   c:'#e8a06a', r:2.00, inc:-0.70, ph:5.01}
   ]
 });
 
