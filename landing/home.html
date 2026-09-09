@@ -138,7 +138,12 @@ section{padding:56px 0;}
 .card{background:hsl(var(--card));border:1px solid hsl(var(--border) / .55);border-radius:var(--radius);transition:border-color .25s,box-shadow .25s,transform .25s;}
 
 /* ═══════════════════════════ NAV ═══════════════════════════ */
-.nav{position:fixed;top:0;left:0;right:0;z-index:60;height:58px;background:hsl(var(--background) / .82);backdrop-filter:blur(18px);border-bottom:1px solid hsl(var(--border) / .5);}
+.nav{position:fixed;top:0;left:0;right:0;z-index:60;height:58px;background:transparent;border-bottom:1px solid transparent;transition:background .3s,border-color .3s,backdrop-filter .3s;}
+.nav.solid{background:hsl(var(--background) / .85);backdrop-filter:blur(18px);border-bottom-color:hsl(var(--border) / .5);}
+/* Sobre el hero oscuro el nav va en claro */
+.nav:not(.solid) .nav-links a,.nav:not(.solid) .ico-btn,.nav:not(.solid) .nav-login{color:rgba(226,236,250,.8);}
+.nav:not(.solid) .nav-links a:hover,.nav:not(.solid) .ico-btn:hover,.nav:not(.solid) .nav-login:hover{color:#fff;background:transparent;}
+.nav:not(.solid) .brand-name{color:#fff;}
 @media(min-width:768px){.nav{height:70px;}}
 .nav-in{max-width:var(--max);margin:0 auto;height:100%;padding:0 16px;display:flex;align-items:center;justify-content:space-between;}
 @media(min-width:768px){.nav-in{padding:0 24px;}}
@@ -188,37 +193,50 @@ section{padding:56px 0;}
 .t-su{color:hsl(var(--success));}
 .t-pr{color:hsl(var(--primary));}
 
-/* ── Escenario 3D (galaxia) ── */
-.stage{
-  position:relative;margin:30px auto 0;max-width:940px;
-  border-radius:22px;overflow:hidden;
-  background:radial-gradient(120% 90% at 50% 0%,hsl(var(--stage-2)) 0%,hsl(var(--stage)) 62%);
-  border:1px solid hsl(var(--stage-bd));
-  box-shadow:0 40px 90px -30px rgba(0,0,0,.55);
+/* ── La galaxia ES el fondo del hero: una sola pantalla, sin ventana ── */
+.hero{
+  background:radial-gradient(125% 105% at 50% 12%,hsl(var(--stage-2)) 0%,hsl(var(--stage)) 58%,hsl(222 47% 5%) 100%);
+  color:hsl(var(--stage-fg));
+  border-bottom:1px solid hsl(var(--stage-bd) / .7);
 }
-@media(min-width:768px){.stage{margin-top:44px;}}
-.stage-canvas{width:100%;height:340px;display:block;}
-@media(min-width:640px){.stage-canvas{height:420px;}}
-@media(min-width:1024px){.stage-canvas{height:500px;}}
-.stage-chip{
-  position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:7px;
-  padding:5px 11px;border-radius:999px;background:rgba(0,0,0,.42);
-  border:1px solid hsl(var(--stage-bd));backdrop-filter:blur(8px);
-  font-size:10.5px;font-weight:600;color:hsl(152 60% 68%);
+#galaxy{position:absolute;inset:0;width:100%;height:100%;z-index:0;cursor:grab;}
+#galaxy:active{cursor:grabbing;}
+/* Velo suave para que el texto se lea sobre las partículas */
+.hero-scrim{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(76% 34% at 50% 16%,hsl(222 47% 6% / .88) 0%,hsl(222 47% 6% / 0) 72%),
+    linear-gradient(180deg,hsl(222 47% 6% / .62) 0%,hsl(222 47% 6% / .18) 34%,transparent 52%);
 }
-.stage-hint{
-  position:absolute;bottom:10px;right:14px;font-size:10.5px;color:hsl(var(--stage-mu));
-  display:flex;align-items:center;gap:5px;
+.hero .hero-in,.hero .hero-foot{position:relative;z-index:3;}
+.hero .hero-desc{color:hsl(var(--stage-mu));}
+.hero .hero-desc b{color:hsl(var(--stage-fg));}
+.hero .note,.hero .checks{color:hsl(var(--stage-mu));}
+.hero .pill-line{background:rgba(255,255,255,.05);border-color:hsl(24 100% 60% / .3);color:hsl(24 100% 70%);}
+.hero .btn-out{background:rgba(255,255,255,.07);border-color:hsl(var(--stage-bd));color:hsl(var(--stage-fg));}
+.hero .btn-out:hover{background:rgba(255,255,255,.13);}
+.hero .uline{color:hsl(24 100% 66%);}
+.hero-band{position:relative;z-index:2;height:250px;pointer-events:none;}
+@media(min-width:768px){.hero-band{height:330px;}}
+@media(min-width:1280px){.hero-band{height:380px;}}
+.hero-hint{
+  position:relative;z-index:3;display:flex;align-items:center;justify-content:center;gap:6px;
+  margin-top:26px;font-size:11px;color:hsl(var(--stage-mu) / .85);
 }
-.stage-legend{
-  display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
-  padding:12px 14px 14px;border-top:1px solid hsl(var(--stage-bd) / .6);
+.hero-legend{
+  position:relative;z-index:3;display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:22px;
 }
-.stage-legend span{
-  font-size:10.5px;font-weight:500;color:hsl(var(--stage-mu));
-  padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.05);
-  border:1px solid hsl(var(--stage-bd) / .8);
+.hero-legend span{
+  font-size:11px;font-weight:500;color:hsl(var(--stage-mu));
+  padding:4px 11px;border-radius:999px;background:rgba(255,255,255,.05);
+  border:1px solid hsl(var(--stage-bd) / .9);backdrop-filter:blur(6px);
 }
+/* Tarjetas del hero, en vidrio sobre la galaxia */
+.hero .stat{background:rgba(255,255,255,.05);border-color:hsl(var(--stage-bd));backdrop-filter:blur(10px);}
+.hero .stat .l{color:hsl(var(--stage-mu));}
+.hero .marquee{background:rgba(255,255,255,.04);border-color:hsl(var(--stage-bd));backdrop-filter:blur(10px);}
+.hero .marquee p{color:hsl(var(--stage-mu));}
+.hero .mq-item span{color:hsl(var(--stage-fg) / .82);}
 
 /* Stats + marquee */
 .hero-foot{position:relative;z-index:2;max-width:1000px;margin:28px auto 0;padding:0 16px 44px;}
@@ -254,10 +272,11 @@ section{padding:56px 0;}
 .pill-dark{background:rgba(255,255,255,.06);border:1px solid hsl(var(--stage-bd));color:hsl(24 100% 68%);}
 .grad-cool{background:linear-gradient(90deg,hsl(24 100% 62%),hsl(35 100% 66%),hsl(271 81% 74%));-webkit-background-clip:text;background-clip:text;color:transparent;}
 
-.brain-wrap{position:relative;max-width:940px;margin:34px auto 0;}
-.brain-canvas{width:100%;height:300px;display:block;}
-@media(min-width:640px){.brain-canvas{height:400px;}}
-@media(min-width:1024px){.brain-canvas{height:460px;}}
+.brain-wrap{position:relative;max-width:1060px;margin:34px auto 0;}
+.brain-canvas{width:100%;height:380px;display:block;cursor:grab;}
+.brain-canvas:active{cursor:grabbing;}
+@media(min-width:640px){.brain-canvas{height:500px;}}
+@media(min-width:1024px){.brain-canvas{height:600px;}}
 .brain-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:14px;}
 .brain-tags span{padding:4px 11px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid hsl(var(--stage-bd));font-size:11px;color:hsl(var(--stage-mu));font-weight:500;}
 
@@ -585,7 +604,9 @@ section{padding:56px 0;}
 
 <!-- ═══════════════ HERO ═══════════════ -->
 <section class="hero">
-  <div class="aura"><div class="blob b1"></div><div class="blob b2"></div><div class="mesh"></div></div>
+  <canvas id="galaxy" role="img" aria-label="Galaxia tridimensional: el núcleo de Rentabilify en el centro, con Meta Ads, TikTok Ads, Shopify, WhatsApp API, Instagram, Google Sheets y las agencias Shalom, Olva, Fenix G y Aliclik orbitando y viajando por sus brazos."></canvas>
+  <div class="hero-scrim"></div>
+
   <div class="wrap">
     <div class="hero-in">
       <span class="pill pill-line" style="margin-bottom:20px">
@@ -595,26 +616,7 @@ section{padding:56px 0;}
       <h1 class="h1">¿Cuántas aplicaciones tienes abiertas<br><span class="grad">para gestionar un pedido?</span></h1>
       <p class="hero-sub">Conéctalas todas desde <span class="uline">Rentabilify</span></p>
       <p class="hero-desc">Centraliza pedidos, campañas, logística y finanzas para saber exactamente <b>cuánto ganas por cada venta</b>.</p>
-    </div>
-  </div>
 
-  <!-- Escenario 3D: la galaxia de integraciones -->
-  <div class="wrap">
-    <div class="stage">
-      <canvas class="stage-canvas" id="galaxy" role="img" aria-label="Galaxia 3D: el núcleo de Rentabilify conectado con Meta Ads, TikTok Ads, Shopify, WhatsApp API, Google Sheets y las agencias de envío Shalom, Olva, Fenix G, Aliclik y Boxful."></canvas>
-      <div class="stage-chip"><span class="ping"></span>Sincronizando · en vivo</div>
-      <div class="stage-hint">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 9 5 12 1.774-5.226L21 14 9 9z"/><path d="m16.071 16.071 4.243 4.243"/></svg>
-        Arrastra para girar
-      </div>
-      <div class="stage-legend">
-        <span>pedidos</span><span>campañas</span><span>guías</span><span>cobros</span><span>conversaciones</span><span>márgenes</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="wrap">
-    <div class="hero-in" style="padding-top:26px">
       <div class="cta-row">
         <button class="btn btn-glow btn-lg">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4M22 5h-4M4 17v2M5 18H3"/></svg>
@@ -627,7 +629,7 @@ section{padding:56px 0;}
         </a>
       </div>
       <p class="note">
-        <svg class="t-pr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+        <svg style="color:hsl(24 100% 66%)" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
         Actívalo en minutos · Cancela cuando quieras
       </p>
       <div class="checks">
@@ -637,9 +639,22 @@ section{padding:56px 0;}
         <span><svg class="t-su" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Sin contratos</span>
       </div>
     </div>
+
+    <div class="hero-legend">
+      <span>pedidos</span><span>campañas</span><span>guías</span><span>cobros</span><span>conversaciones</span><span>márgenes</span>
+    </div>
+    <p class="hero-hint">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 9 5 12 1.774-5.226L21 14 9 9z"/><path d="m16.071 16.071 4.243 4.243"/></svg>
+      Arrastra la galaxia para girarla
+    </p>
   </div>
 
-  <div class="hero-foot">
+  <div class="hero-band"></div>
+</section>
+
+<!-- ═══════════════ CIFRAS + INTEGRACIONES ═══════════════ -->
+<section class="soft" style="padding-top:44px;padding-bottom:44px">
+  <div class="wrap">
     <!-- ⚠️ En el sitio real estos contadores muestran 0 / $0 / 0 / 0.
          Cambia data-to (y data-pre / data-suf) por las cifras reales. -->
     <div class="stats rv">
@@ -656,6 +671,7 @@ section{padding:56px 0;}
   </div>
 </section>
 
+
 <!-- ═══════════════ EL CEREBRO ═══════════════ -->
 <section id="cerebro" class="dark-sec">
   <div class="aura"><div class="blob b1"></div><div class="blob b2"></div></div>
@@ -671,45 +687,13 @@ section{padding:56px 0;}
     </div>
 
     <div class="brain-wrap">
-      <canvas class="brain-canvas" id="brain" role="img" aria-label="Cerebro tridimensional formado por neuronas que se encienden y conectan entre sí, representando el modelo entrenado con los datos de la tienda."></canvas>
+      <canvas class="brain-canvas" id="brainGalaxy" role="img" aria-label="La misma galaxia en modo cerebro: el Bot Rentabilify en el núcleo, rodeado por las fuentes de datos de la tienda, mientras los logos de las integraciones viajan por los brazos espirales hacia el centro."></canvas>
       <div class="brain-tags">
         <span>mensaje del cliente</span><span>jerga regional</span><span>catálogo</span><span>cobertura COD</span><span>fase del pedido</span><span>historial</span>
       </div>
-    </div>
-
-    <!-- Mapa neuronal: contexto (exterior) → intenciones (interior) → núcleo -->
-    <div class="neural">
-      <svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid meet" aria-label="Mapa del modelo: dieciocho fuentes de datos de la operación alimentan al Bot Rentabilify, que resuelve ocho intenciones frecuentes de los clientes.">
-        <defs>
-          <radialGradient id="coreG" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#ffffff"/><stop offset="34%" stop-color="#ffd0a8"/>
-            <stop offset="70%" stop-color="hsl(24 100% 55%)"/><stop offset="100%" stop-color="hsl(24 90% 32%)"/>
-          </radialGradient>
-          <radialGradient id="coreH" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="hsl(24 100% 60% / .5)"/><stop offset="100%" stop-color="hsl(24 100% 60% / 0)"/>
-          </radialGradient>
-          <linearGradient id="lnG" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="hsl(24 100% 62%)" stop-opacity="0.55"/>
-            <stop offset="100%" stop-color="hsl(24 100% 62%)" stop-opacity="0.08"/>
-          </linearGradient>
-          <filter id="gl" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <g id="nLinks"></g>
-        <g id="nPulses"></g>
-        <g id="nOuter"></g>
-        <g id="nInner"></g>
-        <g>
-          <circle cx="600" cy="380" r="72" fill="url(#coreH)"><animate attributeName="r" values="66;80;66" dur="4s" repeatCount="indefinite"/></circle>
-          <circle cx="600" cy="380" r="16" fill="url(#coreG)" filter="url(#gl)"/>
-          <circle cx="600" cy="380" r="16" fill="none" stroke="rgba(255,255,255,.72)" stroke-width="1.5"/>
-          <text x="600" y="418" text-anchor="middle" fill="#fff" style="font:800 19px var(--font)">Bot Rentabilify</text>
-        </g>
-      </svg>
-      <p class="neural-hint">
+      <p class="neural-hint" style="margin-top:10px">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 9 5 12 1.774-5.226L21 14 9 9z"/><path d="m16.071 16.071 4.243 4.243"/></svg>
-        Toca una neurona para ver qué alimenta
+        Cada logo que entra al núcleo es un dato que el cerebro acaba de aprender
       </p>
     </div>
 
@@ -1451,18 +1435,243 @@ var BRANDS=[
 })();
 </script>
 
+
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   GALAXIA 3D — proyección propia sobre Canvas 2D, sin librerías.
-   Núcleo = Rentabilify. Los nodos orbitan en 3D y envían pulsos.
-   ═══════════════════════════════════════════════════════════════ */
-(function(){
-  var cv=document.getElementById('galaxy'); if(!cv) return;
-  var ctx=cv.getContext('2d'), W=0,H=0,DPR=1, cx=0, cy=0;
-  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+   UNA SOLA GALAXIA — motor compartido por el hero y por El Cerebro.
+   Proyección en perspectiva escrita a mano sobre Canvas 2D, sin
+   librerías: la pieza central de la página no depende de un CDN.
 
-  /* Nodos = las integraciones reales de Rentabilify */
-  var NODES=[
+   Cada instancia tiene: brazos espirales, nodos con etiqueta que
+   orbitan en anillos inclinados, y logos que VIAJAN por los brazos
+   hacia el núcleo — cada logo que entra es un dato aprendido.
+   ═══════════════════════════════════════════════════════════════ */
+function makeGalaxy(cv, cfg){
+  if(!cv) return;
+  var ctx=cv.getContext('2d'), W=0,H=0,DPR=1,cx=0,cy=0;
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var ARMS=3, TWIST=1.85, TILT=cfg.tilt||0.58, FOV=3.1;
+  var rot=0, drag={on:false,x:0,vx:0}, raf=null, visible=true;
+
+  /* Brazos espirales */
+  var P=[];
+  for(var i=0;i<cfg.density;i++){
+    var arm=i%ARMS, t=Math.pow(Math.random(),0.62), rad=0.18+t*2.30;
+    var th=arm*(Math.PI*2/ARMS)+rad*TWIST+(Math.random()-0.5)*0.55/(0.25+rad);
+    var sp=0.055+rad*0.045;
+    P.push({r:rad,th:th,y:(Math.random()-0.5)*sp*2,jx:(Math.random()-0.5)*sp,jz:(Math.random()-0.5)*sp,
+            s:Math.random()*1.7+0.42,w:0.28+Math.random()*0.72});
+  }
+  /* Estrellas de fondo */
+  var DUST=[];
+  for(var d=0;d<cfg.dust;d++) DUST.push({x:Math.random(),y:Math.random(),s:Math.random()*1.3+0.25,a:Math.random()*0.45+0.12});
+
+  /* Logos que viajan por los brazos hacia el núcleo */
+  var TR=[];
+  cfg.travelers.forEach(function(b,i){
+    TR.push({b:b, arm:i%ARMS, p:Math.random(), sp:0.00006+Math.random()*0.00007, off:(Math.random()-0.5)*0.30});
+  });
+
+  function size(){
+    DPR=Math.min(window.devicePixelRatio||1,2);
+    var r=cv.getBoundingClientRect(); W=r.width; H=r.height;
+    if(!W||!H) return;
+    cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR);
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    cx=W/2; cy=H*(cfg.coreY||0.5);
+  }
+  function proj(x,y,z,rr){
+    var s1=Math.sin(rr),c1=Math.cos(rr);
+    var X=x*c1-z*s1, Z=x*s1+z*c1;
+    var ct=Math.cos(TILT),st=Math.sin(TILT);
+    var Y=y*ct-Z*st, Z2=y*st+Z*ct;
+    var f=FOV/(FOV+Z2+2.4);
+    var sc=Math.min(W*cfg.spreadW, H*cfg.spreadH);
+    return {x:cx+X*f*sc, y:cy+Y*f*sc, f:f, z:Z2};
+  }
+  /* Punto del brazo espiral a un radio dado */
+  function armPoint(arm,r,off){
+    var th=arm*(Math.PI*2/ARMS)+r*TWIST+off;
+    return {x:Math.cos(th)*r, z:Math.sin(th)*r};
+  }
+  function rrect(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+    ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+    ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+  }
+
+  function draw(now){
+    if(!W||!H){ size(); raf=requestAnimationFrame(draw); return; }
+    ctx.clearRect(0,0,W,H);   /* transparente: el fondo lo pone la sección */
+
+    /* Estrellas */
+    for(var i=0;i<DUST.length;i++){
+      var st=DUST[i], tw=0.6+0.4*Math.sin(now*0.0011+i);
+      ctx.globalAlpha=st.a*tw; ctx.fillStyle='#cfe0ff';
+      ctx.fillRect(st.x*W,st.y*H,st.s,st.s);
+    }
+    ctx.globalAlpha=1;
+
+    if(!reduce&&!drag.on) rot+=0.0009;
+    rot+=drag.vx; drag.vx*=0.94;
+
+    var core=proj(0,0,0,rot);
+
+    /* Resplandor del núcleo */
+    var cg=ctx.createRadialGradient(core.x,core.y,0,core.x,core.y,Math.min(W,H)*0.34);
+    cg.addColorStop(0,'rgba(255,168,86,0.50)');
+    cg.addColorStop(0.35,'rgba(255,116,26,0.17)');
+    cg.addColorStop(1,'rgba(255,107,26,0)');
+    ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(core.x,core.y,Math.min(W,H)*0.34,0,6.284); ctx.fill();
+
+    /* Partículas de los brazos */
+    ctx.globalCompositeOperation='lighter';
+    for(var q=0;q<P.length;q++){
+      var pa=P[q];
+      var th=pa.th+(reduce?0:now*0.000045/(0.30+pa.r));
+      var pt=proj(Math.cos(th)*pa.r+pa.jx, pa.y, Math.sin(th)*pa.r+pa.jz, rot);
+      if(pt.f<=0.06) continue;
+      var dep=Math.max(0,Math.min(1,(pt.f-0.28)/0.85));
+      var warm=Math.max(0,1-pa.r/1.6);
+      ctx.globalAlpha=(0.24+0.58*dep)*pa.w;
+      ctx.fillStyle='rgb(255,'+Math.round(150+95*warm-pa.w*38)+','+Math.round(70+150*(1-warm)*pa.w)+')';
+      ctx.beginPath(); ctx.arc(pt.x,pt.y,pa.s*pt.f*0.95,0,6.284); ctx.fill();
+    }
+    ctx.globalCompositeOperation='source-over';
+    ctx.globalAlpha=1;
+
+    /* Nodos con etiqueta, ordenados por profundidad */
+    var pts=[];
+    for(var n=0;n<cfg.nodes.length;n++){
+      var nd=cfg.nodes[n];
+      var a=nd.ph+(reduce?0:now*0.000085/(0.6+nd.r*0.35));
+      var y2=Math.sin(a)*Math.sin(nd.inc)*nd.r*0.92;
+      pts.push({nd:nd,p:proj(Math.cos(a)*nd.r, y2, Math.sin(a)*nd.r*Math.cos(nd.inc), rot)});
+    }
+    pts.sort(function(u,v){return v.p.z-u.p.z;});
+
+    /* Enlaces al núcleo */
+    for(var l=0;l<pts.length;l++){
+      var pp=pts[l].p;
+      var op=Math.max(0.05,Math.min(0.36,(pp.f-0.25)*0.75));
+      ctx.strokeStyle='rgba(255,150,80,'+op+')';
+      ctx.lineWidth=Math.max(0.5,pp.f*1.1);
+      ctx.setLineDash([5,5]); ctx.lineDashOffset=-(now*0.018)%10;
+      ctx.beginPath(); ctx.moveTo(core.x,core.y); ctx.lineTo(pp.x,pp.y); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    /* ── Logos viajando por los brazos hacia el núcleo ── */
+    for(var t=0;t<TR.length;t++){
+      var tr=TR[t];
+      if(!reduce) tr.p+=tr.sp*16.6;
+      if(tr.p>=1){ tr.p=0; }
+      var ease=1-Math.pow(1-tr.p,1.7);
+      var r=2.35-ease*2.20;                       /* del borde al núcleo */
+      var ap=armPoint(tr.arm, r, tr.off+(reduce?0:now*0.000045/(0.30+r)));
+      var tp=proj(ap.x, (Math.random()-0.5)*0.001, ap.z, rot);
+      if(tp.f<=0.10) continue;
+
+      var fade=Math.min(1,tr.p*6)*Math.min(1,(1-tr.p)*7);   /* aparece y se funde */
+      var sz=Math.max(11,20*tp.f);
+      ctx.globalAlpha=Math.max(0,fade)*Math.min(1,(tp.f-0.16)*2.2);
+
+      /* estela */
+      var ap2=armPoint(tr.arm, Math.min(2.35,r+0.16), tr.off+(reduce?0:now*0.000045/(0.30+r)));
+      var tp2=proj(ap2.x,0,ap2.z,rot);
+      ctx.strokeStyle=tr.b.c; ctx.lineWidth=1.4*tp.f; ctx.globalAlpha*=0.5;
+      ctx.beginPath(); ctx.moveTo(tp2.x,tp2.y); ctx.lineTo(tp.x,tp.y); ctx.stroke();
+      ctx.globalAlpha/=0.5;
+
+      /* chip del logo */
+      ctx.save();
+      ctx.shadowColor=tr.b.c; ctx.shadowBlur=12*tp.f;
+      ctx.fillStyle=tr.b.c;
+      rrect(tp.x-sz/2, tp.y-sz/2, sz, sz, sz*0.28); ctx.fill();
+      ctx.restore();
+      ctx.fillStyle='#fff';
+      ctx.font='800 '+Math.round(sz*0.56)+'px Inter, system-ui, sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(tr.b.l, tp.x, tp.y+0.5);
+      ctx.globalAlpha=1;
+    }
+
+    /* Nodos y etiquetas */
+    for(var m=0;m<pts.length;m++){
+      var nd2=pts[m].nd, q2=pts[m].p, f=q2.f, rd=Math.max(3.2,7.0*f);
+      ctx.globalAlpha=Math.max(0.3,Math.min(1,(f-0.2)*1.6));
+      var hg=ctx.createRadialGradient(q2.x,q2.y,0,q2.x,q2.y,rd*3.4);
+      hg.addColorStop(0,nd2.c+'aa'); hg.addColorStop(1,nd2.c+'00');
+      ctx.fillStyle=hg; ctx.beginPath(); ctx.arc(q2.x,q2.y,rd*3.4,0,6.284); ctx.fill();
+      ctx.fillStyle=nd2.c; ctx.beginPath(); ctx.arc(q2.x,q2.y,rd,0,6.284); ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.85)'; ctx.lineWidth=1.1; ctx.stroke();
+      if(f>0.42){
+        ctx.globalAlpha=Math.min(1,(f-0.42)*3.1);
+        ctx.font='600 '+Math.max(9,Math.round(11.5*f))+'px Inter, system-ui, sans-serif';
+        ctx.textAlign='center'; ctx.textBaseline='top';
+        ctx.fillStyle='rgba(226,236,250,.92)';
+        ctx.fillText(nd2.n,q2.x,q2.y+rd+6);
+      }
+      ctx.globalAlpha=1;
+    }
+
+    /* Núcleo */
+    var cr=Math.max(15,Math.min(W,H)*cfg.coreR);
+    var pulse=1+(reduce?0:0.045*Math.sin(now*0.0016));
+    ctx.save();
+    ctx.shadowColor='rgba(255,140,50,.95)'; ctx.shadowBlur=36;
+    var kg=ctx.createRadialGradient(core.x-cr*0.3,core.y-cr*0.35,cr*0.1,core.x,core.y,cr*pulse);
+    kg.addColorStop(0,'#fff6ec'); kg.addColorStop(0.42,'#ffb066'); kg.addColorStop(1,'#e8590c');
+    ctx.fillStyle=kg; ctx.beginPath(); ctx.arc(core.x,core.y,cr*pulse,0,6.284); ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.arc(core.x,core.y,cr*pulse,0,6.284); ctx.stroke();
+    ctx.font='900 '+Math.round(cr*0.8)+'px Inter, system-ui, sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle='#3b1400'; ctx.fillText(cfg.core.letter,core.x,core.y+1);
+    ctx.font='700 '+(cfg.core.size||12)+'px Inter, system-ui, sans-serif';
+    ctx.textBaseline='top'; ctx.fillStyle='rgba(255,255,255,.94)';
+    ctx.fillText(cfg.core.label,core.x,core.y+cr+11);
+
+    raf=requestAnimationFrame(draw);
+  }
+
+  /* Arrastrar para girar */
+  function down(e){drag.on=true;drag.x=(e.touches?e.touches[0].clientX:e.clientX);}
+  function move(e){ if(!drag.on)return; var x=(e.touches?e.touches[0].clientX:e.clientX); drag.vx=(x-drag.x)*0.0032; drag.x=x; }
+  function up(){drag.on=false;}
+  cv.addEventListener('mousedown',down); cv.addEventListener('touchstart',down,{passive:true});
+  window.addEventListener('mousemove',move); cv.addEventListener('touchmove',move,{passive:true});
+  window.addEventListener('mouseup',up); window.addEventListener('touchend',up);
+
+  size(); window.addEventListener('resize',size);
+  /* No gastar batería cuando la galaxia no se ve */
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(en){
+      en.forEach(function(x){
+        if(x.isIntersecting && !raf){ raf=requestAnimationFrame(draw); }
+        else if(!x.isIntersecting && raf){ cancelAnimationFrame(raf); raf=null; }
+      });
+    },{threshold:0}).observe(cv);
+  }
+  raf=requestAnimationFrame(draw);
+}
+
+/* Logos que viajan por los brazos */
+var LOGOS=[
+  {l:'M',c:'#0866FF'},{l:'T',c:'#111827'},{l:'S',c:'#95BF47'},{l:'W',c:'#25D366'},
+  {l:'I',c:'#DD2A7B'},{l:'G',c:'#0F9D58'},{l:'S',c:'#E63946'},{l:'O',c:'#F4A300'},
+  {l:'F',c:'#8B5CF6'},{l:'A',c:'#6C5CE7'},{l:'B',c:'#0EA5E9'},{l:'M',c:'#EC4899'}
+];
+
+/* ── Instancia 1: el hero. Nodos = tus integraciones ── */
+makeGalaxy(document.getElementById('galaxy'),{
+  density:2900, dust:240, coreY:0.765, coreR:0.045, spreadW:0.205, spreadH:0.435, tilt:0.62,
+  core:{letter:'R', label:'Rentabilify', size:13},
+  travelers:LOGOS.slice(0,9),
+  nodes:[
     {n:'Meta Ads',     c:'#4c9bff', r:1.02, inc: 0.00, ph:0.00},
     {n:'TikTok Ads',   c:'#8ea3c8', r:1.02, inc: 0.00, ph:2.09},
     {n:'Shopify',      c:'#a9dc6a', r:1.02, inc: 0.00, ph:4.19},
@@ -1473,395 +1682,36 @@ var BRANDS=[
     {n:'Olva',         c:'#ffc861', r:1.98, inc:-0.72, ph:1.92},
     {n:'Fenix G',      c:'#b79bff', r:1.98, inc:-0.72, ph:3.49},
     {n:'Aliclik',      c:'#9d8dff', r:1.98, inc:-0.72, ph:5.06}
-  ];
+  ]
+});
 
-  /* Partículas de la galaxia: 3 brazos espirales */
-  var P=[], ARMS=3, N=2700;
-  for(var i=0;i<N;i++){
-    var arm=i%ARMS, t=Math.pow(Math.random(),0.62);
-    var rad=0.16+t*2.35;
-    var th=arm*(Math.PI*2/ARMS)+rad*1.85+(Math.random()-0.5)*0.55/(0.25+rad);
-    var spread=0.055+rad*0.045;
-    P.push({
-      r:rad, th:th,
-      y:(Math.random()-0.5)*spread*2,
-      jx:(Math.random()-0.5)*spread, jz:(Math.random()-0.5)*spread,
-      s:Math.random()*1.7+0.42,
-      w:0.28+Math.random()*0.72              /* "temperatura": 1 = núcleo cálido */
-    });
-  }
-  /* Polvo de fondo */
-  var DUST=[];
-  for(var d=0; d<230; d++){
-    DUST.push({x:Math.random(),y:Math.random(),s:Math.random()*1.25+0.25,a:Math.random()*0.45+0.12});
-  }
+/* ── Instancia 2: El Cerebro. Mismos brazos, nodos = lo que sabe de tu operación ── */
+makeGalaxy(document.getElementById('brainGalaxy'),{
+  density:3200, dust:200, coreY:0.5, coreR:0.055, spreadW:0.30, spreadH:0.70, tilt:0.50,
+  core:{letter:'R', label:'Bot Rentabilify', size:14},
+  travelers:LOGOS,
+  nodes:[
+    {n:'Pedidos',        c:'#ffb066', r:1.05, inc: 0.00, ph:0.00},
+    {n:'Cobertura COD',  c:'#4ce08a', r:1.05, inc: 0.00, ph:2.09},
+    {n:'Catálogo',       c:'#a9dc6a', r:1.05, inc: 0.00, ph:4.19},
+    {n:'Tasa de rechazo',c:'#ff7a7a', r:1.55, inc: 0.78, ph:0.62},
+    {n:'CPA real',       c:'#4c9bff', r:1.55, inc: 0.78, ph:2.72},
+    {n:'Campañas',       c:'#ff9fd0', r:1.55, inc: 0.78, ph:4.82},
+    {n:'Couriers',       c:'#ffc861', r:2.00, inc:-0.70, ph:0.30},
+    {n:'Clientes',       c:'#b79bff', r:2.00, inc:-0.70, ph:1.87},
+    {n:'Comisiones',     c:'#7fd4ff', r:2.00, inc:-0.70, ph:3.44},
+    {n:'Devoluciones',   c:'#ff8f6b', r:2.00, inc:-0.70, ph:5.01}
+  ]
+});
 
-  var TILT=0.60, FOV=3.1, drag={on:false,x:0,vx:0}, rot=0, spin=0.00022;
-
-  function size(){
-    DPR=Math.min(window.devicePixelRatio||1,2);
-    var r=cv.getBoundingClientRect();
-    W=r.width; H=r.height;
-    cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR);
-    ctx.setTransform(DPR,0,0,DPR,0,0);
-    cx=W/2; cy=H/2+H*0.03;
-  }
-
-  function proj(x,y,z,rr){
-    var s=Math.sin(rr),c=Math.cos(rr);
-    var X=x*c-z*s, Z=x*s+z*c;
-    var ct=Math.cos(TILT),st=Math.sin(TILT);
-    var Y=y*ct-Z*st, Z2=y*st+Z*ct;
-    var f=FOV/(FOV+Z2+2.4);
-    var sc=Math.min(W*0.40,H*0.86);
-    return {x:cx+X*f*sc, y:cy+Y*f*sc, f:f, z:Z2};
-  }
-
-  function draw(now){
-    var dark=THEME.isDark();
-    ctx.clearRect(0,0,W,H);
-
-    /* Fondo del escenario: siempre oscuro, es "el producto" */
-    var g=ctx.createRadialGradient(cx,cy*0.86,0,cx,cy,Math.max(W,H)*0.78);
-    g.addColorStop(0,'rgba(26,38,60,1)');
-    g.addColorStop(0.55,'rgba(13,22,38,1)');
-    g.addColorStop(1,'rgba(8,14,25,1)');
-    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-
-    /* Estrellas de fondo */
-    for(var i=0;i<DUST.length;i++){
-      var s=DUST[i];
-      var tw=0.6+0.4*Math.sin(now*0.0011+i);
-      ctx.globalAlpha=s.a*tw;
-      ctx.fillStyle='#cfe0ff';
-      ctx.fillRect(s.x*W,s.y*H,s.s,s.s);
-    }
-    ctx.globalAlpha=1;
-
-    if(!reduce&&!drag.on){ rot+=spin*16.6; }
-    rot+=drag.vx; drag.vx*=0.94;
-
-    /* Resplandor del núcleo */
-    var core=proj(0,0,0,rot);
-    var cg=ctx.createRadialGradient(core.x,core.y,0,core.x,core.y,Math.min(W,H)*0.30);
-    cg.addColorStop(0,'rgba(255,168,86,0.60)');
-    cg.addColorStop(0.35,'rgba(255,116,26,0.20)');
-    cg.addColorStop(1,'rgba(255,107,26,0)');
-    ctx.fillStyle=cg;
-    ctx.beginPath(); ctx.arc(core.x,core.y,Math.min(W,H)*0.30,0,6.284); ctx.fill();
-
-    /* Partículas de los brazos */
-    ctx.globalCompositeOperation='lighter';
-    for(var p=0;p<P.length;p++){
-      var q=P[p];
-      var th=q.th+ (reduce?0: now*0.000045/(0.30+q.r));
-      var x=Math.cos(th)*q.r+q.jx, z=Math.sin(th)*q.r+q.jz;
-      var pt=proj(x,q.y,z,rot);
-      if(pt.f<=0.06) continue;
-      var depth=Math.max(0,Math.min(1,(pt.f-0.28)/0.85));
-      var warm=Math.max(0,1-q.r/1.5);
-      var R=Math.round(255), G=Math.round(150+95*warm-q.w*38), B=Math.round(70+150*(1-warm)*q.w);
-      ctx.globalAlpha=(0.24+0.58*depth)*q.w;
-      ctx.fillStyle='rgb('+R+','+G+','+B+')';
-      var rr=q.s*pt.f*0.95;
-      ctx.beginPath(); ctx.arc(pt.x,pt.y,rr,0,6.284); ctx.fill();
-    }
-    ctx.globalCompositeOperation='source-over';
-    ctx.globalAlpha=1;
-
-    /* Nodos: se ordenan por profundidad para que los de atrás queden detrás */
-    var pts=[];
-    for(var n=0;n<NODES.length;n++){
-      var nd=NODES[n];
-      var a=nd.ph+(reduce?0: now*0.000085/(0.6+nd.r*0.35));
-      var x2=Math.cos(a)*nd.r, z2=Math.sin(a)*nd.r;
-      var y2=Math.sin(a)*Math.sin(nd.inc)*nd.r*0.92;
-      z2*=Math.cos(nd.inc);
-      pts.push({nd:nd,p:proj(x2,y2,z2,rot),ang:a});
-    }
-    pts.sort(function(a,b){return b.p.z-a.p.z;});
-
-    /* Enlaces núcleo → nodo + pulso viajando */
-    for(var l=0;l<pts.length;l++){
-      var it=pts[l], pp=it.p;
-      var op=Math.max(0.06,Math.min(0.42,(pp.f-0.25)*0.8));
-      ctx.strokeStyle='rgba(255,150,80,'+op+')';
-      ctx.lineWidth=Math.max(0.5,pp.f*1.15);
-      ctx.setLineDash([5,5]);
-      ctx.lineDashOffset=-(now*0.018)%10;
-      ctx.beginPath(); ctx.moveTo(core.x,core.y); ctx.lineTo(pp.x,pp.y); ctx.stroke();
-      ctx.setLineDash([]);
-      var tp=((now*0.00034)+l*0.17)%1;
-      var px=core.x+(pp.x-core.x)*tp, py=core.y+(pp.y-core.y)*tp;
-      ctx.globalAlpha=Math.sin(tp*Math.PI)*0.95;
-      ctx.fillStyle='#ffcf9a';
-      ctx.beginPath(); ctx.arc(px,py,2.1*pp.f+0.6,0,6.284); ctx.fill();
-      ctx.globalAlpha=1;
-    }
-
-    /* Nodos y etiquetas */
-    for(var m=0;m<pts.length;m++){
-      var itm=pts[m], q2=itm.p, ndd=itm.nd;
-      var f=q2.f, rad2=Math.max(3.2,7.2*f);
-      ctx.globalAlpha=Math.max(0.35,Math.min(1,(f-0.2)*1.6));
-      var hg=ctx.createRadialGradient(q2.x,q2.y,0,q2.x,q2.y,rad2*3.4);
-      hg.addColorStop(0,ndd.c+'aa'); hg.addColorStop(1,ndd.c+'00');
-      ctx.fillStyle=hg;
-      ctx.beginPath(); ctx.arc(q2.x,q2.y,rad2*3.4,0,6.284); ctx.fill();
-      ctx.fillStyle=ndd.c;
-      ctx.beginPath(); ctx.arc(q2.x,q2.y,rad2,0,6.284); ctx.fill();
-      ctx.strokeStyle='rgba(255,255,255,.85)'; ctx.lineWidth=1.1;
-      ctx.stroke();
-      /* Etiqueta */
-      if(f>0.42){
-        ctx.globalAlpha=Math.min(1,(f-0.42)*3.1);
-        ctx.font='600 '+Math.max(9,Math.round(11.5*f))+'px Inter, system-ui, sans-serif';
-        ctx.textAlign='center'; ctx.textBaseline='top';
-        ctx.fillStyle='rgba(226,236,250,.92)';
-        ctx.fillText(ndd.n,q2.x,q2.y+rad2+6);
-      }
-      ctx.globalAlpha=1;
-    }
-
-    /* Núcleo Rentabilify */
-    var cr=Math.max(15,Math.min(W,H)*0.052);
-    var pulse=1+(reduce?0:0.045*Math.sin(now*0.0016));
-    ctx.save();
-    ctx.shadowColor='rgba(255,140,50,.95)'; ctx.shadowBlur=34;
-    var kg=ctx.createRadialGradient(core.x-cr*0.3,core.y-cr*0.35,cr*0.1,core.x,core.y,cr*pulse);
-    kg.addColorStop(0,'#fff6ec'); kg.addColorStop(0.42,'#ffb066'); kg.addColorStop(1,'#e8590c');
-    ctx.fillStyle=kg;
-    ctx.beginPath(); ctx.arc(core.x,core.y,cr*pulse,0,6.284); ctx.fill();
-    ctx.restore();
-    ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=1.4;
-    ctx.beginPath(); ctx.arc(core.x,core.y,cr*pulse,0,6.284); ctx.stroke();
-    ctx.font='900 '+Math.round(cr*0.85)+'px Inter, system-ui, sans-serif';
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillStyle='#3b1400'; ctx.fillText('R',core.x,core.y+1);
-    ctx.font='700 12px Inter, system-ui, sans-serif';
-    ctx.textBaseline='top'; ctx.fillStyle='rgba(255,255,255,.92)';
-    ctx.fillText('Rentabilify',core.x,core.y+cr+11);
-
-    raf=requestAnimationFrame(draw);
-  }
-
-  /* Arrastrar para girar */
-  function down(e){drag.on=true;drag.x=(e.touches?e.touches[0].clientX:e.clientX);}
-  function move(e){
-    if(!drag.on)return;
-    var x=(e.touches?e.touches[0].clientX:e.clientX);
-    drag.vx=(x-drag.x)*0.0034; drag.x=x;
-  }
-  function up(){drag.on=false;}
-  cv.addEventListener('mousedown',down); cv.addEventListener('touchstart',down,{passive:true});
-  window.addEventListener('mousemove',move); cv.addEventListener('touchmove',move,{passive:true});
-  window.addEventListener('mouseup',up); window.addEventListener('touchend',up);
-  cv.style.cursor='grab';
-  cv.addEventListener('mousedown',function(){cv.style.cursor='grabbing';});
-  window.addEventListener('mouseup',function(){cv.style.cursor='grab';});
-
-  var raf=null;
-  size(); window.addEventListener('resize',size);
-  raf=requestAnimationFrame(draw);
-})();
-</script>
-
-<script>
-/* ═══════════════════════════════════════════════════════════════
-   CEREBRO 3D — nube de neuronas en dos lóbulos, con sinapsis
-   que se encienden. Misma proyección propia, sin librerías.
-   ═══════════════════════════════════════════════════════════════ */
+/* Nav transparente sobre el hero, sólido al bajar */
 (function(){
-  var cv=document.getElementById('brain'); if(!cv) return;
-  var ctx=cv.getContext('2d'), W=0,H=0,DPR=1,cx=0,cy=0;
-  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* Nube de puntos con forma de cerebro: dos lóbulos + surcos */
-  var PTS=[], N=760;
-  for(var i=0;i<N;i++){
-    var u=Math.random()*Math.PI*2, v=Math.acos(2*Math.random()-1);
-    var sx=Math.sin(v)*Math.cos(u), sy=Math.cos(v), sz=Math.sin(v)*Math.sin(u);
-    /* surcos: ondulación de la superficie */
-    var fold=1+0.085*Math.sin(6.5*u)*Math.sin(3.2*v)+0.05*Math.sin(4*v);
-    var lobe=sz>=0?1:-1;                       /* separación de hemisferios */
-    var x=sx*1.30*fold, y=sy*0.94*fold, z=sz*1.06*fold+lobe*0.10;
-    /* aplanar la base y estirar el frente, para que lea como cerebro */
-    y=y*0.92-0.06; x*=1+0.10*Math.max(0,y);
-    PTS.push({x:x,y:y,z:z,ph:Math.random()*6.28,sp:0.6+Math.random()*0.9});
+  var nav=document.querySelector('.nav'), hero=document.querySelector('.hero');
+  function upd(){
+    var lim=hero?hero.offsetHeight-90:80;
+    nav.classList.toggle('solid', window.scrollY>Math.min(lim,520));
   }
-  /* Sinapsis entre puntos cercanos */
-  var LINKS=[];
-  for(var a=0;a<PTS.length;a+=2){
-    for(var b=a+1;b<Math.min(a+26,PTS.length);b++){
-      var dx=PTS[a].x-PTS[b].x, dy=PTS[a].y-PTS[b].y, dz=PTS[a].z-PTS[b].z;
-      var d2=dx*dx+dy*dy+dz*dz;
-      if(d2<0.052){ LINKS.push({a:a,b:b,ph:Math.random()*6.28}); }
-    }
-  }
-
-  var TILT=0.30, FOV=3.4, rot=0, drag={on:false,x:0,vx:0};
-
-  function size(){
-    DPR=Math.min(window.devicePixelRatio||1,2);
-    var r=cv.getBoundingClientRect(); W=r.width;H=r.height;
-    cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR);
-    ctx.setTransform(DPR,0,0,DPR,0,0);
-    cx=W/2; cy=H/2;
-  }
-  function proj(x,y,z,rr){
-    var s=Math.sin(rr),c=Math.cos(rr);
-    var X=x*c-z*s, Z=x*s+z*c;
-    var ct=Math.cos(TILT),st=Math.sin(TILT);
-    var Y=y*ct-Z*st, Z2=y*st+Z*ct;
-    var f=FOV/(FOV+Z2+2.0);
-    var sc=Math.min(W*0.34,H*0.80);
-    return {x:cx+X*f*sc, y:cy+Y*f*sc, f:f, z:Z2};
-  }
-
-  function draw(now){
-    ctx.clearRect(0,0,W,H);
-    if(!reduce&&!drag.on) rot+=0.0021;
-    rot+=drag.vx; drag.vx*=0.94;
-
-    var proj_cache=new Array(PTS.length);
-    for(var i=0;i<PTS.length;i++){
-      var p=PTS[i]; proj_cache[i]=proj(p.x,p.y,p.z,rot);
-    }
-
-    /* Halo */
-    var hg=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.min(W,H)*0.52);
-    hg.addColorStop(0,'rgba(255,140,60,0.16)');
-    hg.addColorStop(0.6,'rgba(167,139,250,0.07)');
-    hg.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=hg; ctx.fillRect(0,0,W,H);
-
-    /* Sinapsis */
-    ctx.globalCompositeOperation='lighter';
-    for(var l=0;l<LINKS.length;l++){
-      var L=LINKS[l], pa=proj_cache[L.a], pb=proj_cache[L.b];
-      if(pa.f<0.30||pb.f<0.30) continue;
-      var fire=reduce?0.35:(0.5+0.5*Math.sin(now*0.0016+L.ph));
-      var depth=Math.min(1,Math.max(0,(pa.f-0.32)/0.7));
-      ctx.globalAlpha=(0.05+0.20*fire)*depth;
-      ctx.strokeStyle= fire>0.78 ? 'rgba(255,196,130,1)' : 'rgba(150,180,255,1)';
-      ctx.lineWidth=0.6*pa.f;
-      ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y); ctx.stroke();
-    }
-
-    /* Neuronas */
-    for(var n=0;n<PTS.length;n++){
-      var q=PTS[n], pt=proj_cache[n];
-      if(pt.f<0.24) continue;
-      var pulse=reduce?0.6:(0.5+0.5*Math.sin(now*0.0013*q.sp+q.ph));
-      var depth2=Math.min(1,Math.max(0,(pt.f-0.28)/0.75));
-      ctx.globalAlpha=(0.20+0.62*pulse)*depth2;
-      ctx.fillStyle= pulse>0.86 ? '#ffd9ad' : (n%5===0?'#ffb066':'#9fc0ff');
-      var r=(pulse>0.86?2.0:1.35)*pt.f;
-      ctx.beginPath(); ctx.arc(pt.x,pt.y,r,0,6.284); ctx.fill();
-    }
-    ctx.globalCompositeOperation='source-over';
-    ctx.globalAlpha=1;
-    raf=requestAnimationFrame(draw);
-  }
-
-  function down(e){drag.on=true;drag.x=(e.touches?e.touches[0].clientX:e.clientX);}
-  function move(e){ if(!drag.on)return; var x=(e.touches?e.touches[0].clientX:e.clientX); drag.vx=(x-drag.x)*0.0032; drag.x=x; }
-  function up(){drag.on=false;}
-  cv.addEventListener('mousedown',down); cv.addEventListener('touchstart',down,{passive:true});
-  window.addEventListener('mousemove',move); cv.addEventListener('touchmove',move,{passive:true});
-  window.addEventListener('mouseup',up); window.addEventListener('touchend',up);
-  cv.style.cursor='grab';
-
-  var raf=null;
-  size(); window.addEventListener('resize',size);
-  raf=requestAnimationFrame(draw);
-})();
-
-/* ═══════════════════════════════════════════════════════════════
-   MAPA NEURONAL — fuentes de datos (exterior) e intenciones
-   (interior) que alimentan al Bot Rentabilify.
-   ═══════════════════════════════════════════════════════════════ */
-(function(){
-  var links=document.getElementById('nLinks'),
-      pulses=document.getElementById('nPulses'),
-      outer=document.getElementById('nOuter'),
-      inner=document.getElementById('nInner');
-  if(!links) return;
-  var CX=600, CY=380, NS='http://www.w3.org/2000/svg';
-
-  /* Lo que el cerebro sabe de tu operación */
-  var OUT=['Pedidos','Cobertura COD','Couriers','Catálogo','Tasa de rechazo','Campañas',
-           'CPA real','Clientes','Comisiones','Zonas y tarifas','Inventario','Devoluciones',
-           'Estados de envío','Equipo','Rótulos','Finanzas','Multi-tienda','Recompra'];
-  /* Lo que resuelve al cliente */
-  var IN=[
-    ['Disponibilidad','#34d399'],['Costo de envío','#38bdf8'],['Tiempo de entrega','#a78bfa'],
-    ['Cobertura COD','#fbbf24'],['Estado del pedido','#fb7185'],['Métodos de pago','#818cf8'],
-    ['Reprogramación','#f97316'],['Datos del pedido','#22d3ee']
-  ];
-
-  function mk(t,at){var e=document.createElementNS(NS,t);for(var k in at)e.setAttribute(k,at[k]);return e;}
-
-  function place(list,rx,ry,cls,cb){
-    list.forEach(function(item,i){
-      var a=-Math.PI/2+(i/list.length)*Math.PI*2;
-      var x=CX+Math.cos(a)*rx, y=CY+Math.sin(a)*ry;
-      cb(item,x,y,a,i);
-    });
-  }
-
-  /* Enlaces exteriores */
-  place(OUT,520,300,'',function(it,x,y){
-    links.appendChild(mk('line',{x1:CX,y1:CY,x2:x,y2:y,stroke:'url(#lnG)','stroke-width':1,'stroke-linecap':'round','stroke-dasharray':'6 5',opacity:.42}));
-  });
-  /* Enlaces interiores */
-  place(IN,255,150,'',function(it,x,y){
-    links.appendChild(mk('line',{x1:CX,y1:CY,x2:x,y2:y,stroke:'hsl(24 100% 62% / .34)','stroke-width':1.2,'stroke-linecap':'round'}));
-  });
-
-  /* Nodos exteriores: fuentes de datos */
-  place(OUT,520,300,'',function(name,x,y,a,i){
-    var g=mk('g',{class:'nrn'});
-    var halo=mk('circle',{cx:x,cy:y,r:13,fill:'hsl(24 100% 62% / .10)'});
-    halo.appendChild(mk('animate',{attributeName:'r',values:'11;17;11',dur:(3+i%5*0.4)+'s',repeatCount:'indefinite'}));
-    g.appendChild(halo);
-    g.appendChild(mk('circle',{cx:x,cy:y,r:5,fill:'hsl(24 100% 70%)',stroke:'hsl(24 100% 55%)','stroke-width':1.5,filter:'url(#gl)'}));
-    var right=Math.cos(a)>-0.05;
-    var t=mk('text',{x:x+(right?13:-13),y:y+6,'text-anchor':right?'start':'end',fill:'rgba(190,205,228,.88)',style:'font:700 17px Inter,system-ui,sans-serif;pointer-events:none'});
-    t.textContent=name; g.appendChild(t);
-    var tt=mk('title'); tt.textContent=name+' — dato de tu tienda que alimenta al bot'; g.appendChild(tt);
-    outer.appendChild(g);
-  });
-
-  /* Nodos interiores: intenciones del cliente */
-  place(IN,255,150,'',function(it,x,y,a,i){
-    var g=mk('g',{class:'nrn'});
-    var halo=mk('circle',{cx:x,cy:y,r:10,fill:'hsl(24 100% 62% / .16)'});
-    halo.appendChild(mk('animate',{attributeName:'r',values:'9;14;9',dur:(2.4+i*0.22)+'s',repeatCount:'indefinite'}));
-    g.appendChild(halo);
-    g.appendChild(mk('circle',{cx:x,cy:y,r:6.5,fill:it[1],stroke:'#fff','stroke-width':1.3,filter:'url(#gl)'}));
-    var right=Math.cos(a)>-0.05;
-    var t=mk('text',{x:x+(right?13:-13),y:y+5,'text-anchor':right?'start':'end',style:'font-family:Inter,system-ui,sans-serif;pointer-events:none'});
-    var s1=mk('tspan',{fill:'#eef4ff',style:'font-weight:600;font-size:14px'}); s1.textContent=it[0];
-    var s2=mk('tspan',{fill:'rgba(255,180,120,.72)',style:'font-weight:500;font-size:12px'}); s2.textContent=' · resuelto';
-    t.appendChild(s1); t.appendChild(s2); g.appendChild(t);
-    var tt=mk('title'); tt.textContent=it[0]+' — intención que el bot resuelve solo'; g.appendChild(tt);
-    inner.appendChild(g);
-  });
-
-  /* Pulsos viajando hacia el núcleo */
-  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(!reduce){
-    OUT.forEach(function(_,i){
-      if(i%2) return;
-      var a=-Math.PI/2+(i/OUT.length)*Math.PI*2;
-      var x=CX+Math.cos(a)*520, y=CY+Math.sin(a)*300;
-      var c=mk('circle',{r:3,fill:'#ffd3a6',filter:'url(#gl)'});
-      var am=mk('animateMotion',{dur:(2.4+(i%5)*0.5)+'s',repeatCount:'indefinite',begin:(i*0.23)+'s',
-        path:'M'+x+' '+y+' L'+CX+' '+CY});
-      c.appendChild(am); pulses.appendChild(c);
-    });
-  }
+  upd(); window.addEventListener('scroll',upd,{passive:true}); window.addEventListener('resize',upd);
 })();
 </script>
 </body>
