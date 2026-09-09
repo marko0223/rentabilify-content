@@ -216,9 +216,9 @@ section{padding:56px 0;}
 .hero .btn-out{background:rgba(255,255,255,.07);border-color:hsl(var(--stage-bd));color:hsl(var(--stage-fg));}
 .hero .btn-out:hover{background:rgba(255,255,255,.13);}
 .hero .uline{color:hsl(24 100% 66%);}
-.hero-band{position:relative;z-index:2;height:310px;pointer-events:none;}
-@media(min-width:768px){.hero-band{height:430px;}}
-@media(min-width:1280px){.hero-band{height:480px;}}
+.hero-band{position:relative;z-index:2;height:340px;pointer-events:none;}
+@media(min-width:768px){.hero-band{height:470px;}}
+@media(min-width:1280px){.hero-band{height:520px;}}
 .hero-hint{
   position:relative;z-index:3;display:flex;align-items:center;justify-content:center;gap:6px;
   margin-top:26px;font-size:11px;color:hsl(var(--stage-mu) / .85);
@@ -257,11 +257,12 @@ section{padding:56px 0;}
 .mq-mask:hover .mq-track{animation-play-state:paused;}
 .mq-item{display:flex;align-items:center;gap:9px;flex-shrink:0;margin-right:44px;}
 .mq-item span{font-size:13px;font-weight:700;color:hsl(var(--foreground) / .78);white-space:nowrap;}
-.chip{height:26px;width:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;}
+.chip{height:26px;width:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;letter-spacing:-.02em;}
+.chip:not(:empty){font-size:clamp(8px,var(--cf,12px),12px);}
 .c-meta{background:#0866FF;}.c-tiktok{background:#0b0b0b;}.c-shopify{background:#95BF47;}
 .c-wa{background:#25D366;}.c-sheets{background:#0F9D58;}.c-shalom{background:#E63946;}
 .c-olva{background:#F4A300;}.c-fenix{background:#8B5CF6;}.c-aliclik{background:#6C5CE7;}
-.c-boxful{background:#0EA5E9;}.c-master{background:#7C3AED;}.c-ig{background:linear-gradient(135deg,#F58529,#DD2A7B,#8134AF);}
+.c-boxful{background:#0EA5E9;}.c-swayp{background:#14B8A6;}.c-eva{background:#38BDF8;}.c-master{background:#7C3AED;}.c-ig{background:linear-gradient(135deg,#F58529,#DD2A7B,#8134AF);}
 
 /* ═══════════════════════ SECCIÓN OSCURA (CEREBRO) ═══════════════════════ */
 .dark-sec{position:relative;overflow:hidden;background:hsl(var(--stage));color:hsl(var(--stage-fg));}
@@ -1097,10 +1098,12 @@ section{padding:56px 0;}
       <div class="card integ rv"><div class="integ-lg"><span class="chip c-shopify">S</span></div><div><div class="integ-h"><h3>Shopify</h3><span class="integ-b">Todos los planes</span></div><p>Pedidos, productos y stock sincronizados</p></div></div>
       <div class="card integ rv"><div class="integ-lg"><span class="chip c-wa">W</span></div><div><div class="integ-h"><h3>WhatsApp Business API</h3><span class="integ-b">Plan Automatización</span></div><p>Bot de confirmación, plantillas, ubicación y CRM completo</p></div></div>
       <div class="card integ rv"><div class="integ-lg"><span class="chip c-sheets">G</span></div><div><div class="integ-h"><h3>Google Sheets</h3><span class="integ-b">Todos los planes</span></div><p>Sincronización bidireccional de pedidos y stock</p></div></div>
-      <div class="card integ rv"><div class="integ-lg"><span class="chip c-shalom">C</span></div><div><div class="integ-h"><h3>Couriers LATAM</h3><span class="integ-b">Todos los planes</span></div><p>Shalom, Olva, Fenix G y más</p></div></div>
+      <div class="card integ rv"><div class="integ-lg"><span class="chip c-shalom">C</span></div><div><div class="integ-h"><h3>Couriers LATAM</h3><span class="integ-b">Todos los planes</span></div><p>Shalom, Olva, Fenix G, Swayp y Eva Courier</p></div></div>
       <div class="card integ rv"><div class="integ-lg"><span class="chip c-aliclik">A</span></div><div><div class="integ-h"><h3>Aliclik</h3><span class="integ-b">Todos los planes</span></div><p>Sincronización de pedidos y estados</p></div></div>
       <div class="card integ rv"><div class="integ-lg"><span class="chip c-boxful">B</span></div><div><div class="integ-h"><h3>Boxful</h3><span class="integ-b">Todos los planes</span></div><p>Genera envíos y recibe el tracking automáticamente</p></div></div>
-      <div class="card integ rv"><div class="integ-lg"><span class="chip c-master">M</span></div><div><div class="integ-h"><h3>Mastershop</h3><span class="integ-b">Todos los planes</span></div><p>Trae tus pedidos y estados sin copiar y pegar</p></div></div>
+      <div class="card integ rv"><div class="integ-lg"><span class="chip c-master">Ms</span></div><div><div class="integ-h"><h3>Mastershop</h3><span class="integ-b">Todos los planes</span></div><p>Trae tus pedidos y estados sin copiar y pegar</p></div></div>
+      <div class="card integ rv"><div class="integ-lg"><span class="chip c-swayp">Sw</span></div><div><div class="integ-h"><h3>Swayp</h3><span class="integ-b">Todos los planes</span></div><p>Guías y seguimiento desde el mismo panel</p></div></div>
+      <div class="card integ rv"><div class="integ-lg"><span class="chip c-eva">Ev</span></div><div><div class="integ-h"><h3>Eva Courier</h3><span class="integ-b">Todos los planes</span></div><p>Despacha y sigue tus envíos sin salir de Rentabilify</p></div></div>
     </div>
   </div>
 </section>
@@ -1264,6 +1267,7 @@ section{padding:56px 0;}
           <span class="chip c-shopify" title="Shopify">S</span><span class="chip c-wa" title="WhatsApp API">W</span>
           <span class="chip c-sheets" title="Google Sheets">G</span><span class="chip c-shalom" title="Shalom">C</span>
           <span class="chip c-aliclik" title="Aliclik">A</span><span class="chip c-boxful" title="Boxful">B</span>
+          <span class="chip c-swayp" title="Swayp">Sw</span><span class="chip c-eva" title="Eva Courier">Ev</span>
         </div>
       </div>
     </div>
@@ -1396,8 +1400,9 @@ var THEME=(function(){
 var BRANDS=[
   ['Meta Ads','c-meta','M'],['TikTok Ads','c-tiktok','T'],['Shopify','c-shopify','S'],
   ['WhatsApp API','c-wa','W'],['Instagram','c-ig','I'],['Google Sheets','c-sheets','G'],
-  ['Shalom','c-shalom','S'],['Olva','c-olva','O'],['Fenix G','c-fenix','F'],
-  ['Aliclik','c-aliclik','A'],['Boxful','c-boxful','B'],['Mastershop','c-master','M']
+  ['Shalom','c-shalom','Sh'],['Olva','c-olva','O'],['Fenix G','c-fenix','F'],
+  ['Aliclik','c-aliclik','A'],['Boxful','c-boxful','B'],['Mastershop','c-master','Ms'],
+  ['Swayp','c-swayp','Sw'],['Eva Courier','c-eva','Ev']
 ];
 (function(){
   var t=document.getElementById('mqTrack');if(!t)return;
@@ -1610,7 +1615,7 @@ function makeGalaxy(cv, cfg){
         ctx.restore();
       }else{
         ctx.fillStyle=nd2.c;
-        ctx.font='800 '+Math.round(sz*0.44)+'px Inter, system-ui, sans-serif';
+        ctx.font='800 '+Math.round(sz*(nd2.l.length>1?0.30:0.44))+'px Inter, system-ui, sans-serif';
         ctx.textAlign='center'; ctx.textBaseline='middle';
         ctx.fillText(nd2.l, pt2.x, pt2.y+0.5);
       }
@@ -1623,10 +1628,11 @@ function makeGalaxy(cv, cfg){
         ctx.textAlign='center'; ctx.textBaseline='middle';
         var tw2=ctx.measureText(nd2.n).width, pw=tw2+16, ph2=fs+10;
         var ly=pt2.y+sz/2+ph2/2+8;
+        var lx=Math.max(pw/2+6, Math.min(W-pw/2-6, pt2.x));   /* nunca se corta contra el borde */
         ctx.fillStyle='rgba(10,16,28,.72)';
-        rrect(pt2.x-pw/2,ly-ph2/2,pw,ph2,ph2/2); ctx.fill();
+        rrect(lx-pw/2,ly-ph2/2,pw,ph2,ph2/2); ctx.fill();
         ctx.fillStyle='rgba(238,244,255,.94)';
-        ctx.fillText(nd2.n, pt2.x, ly+0.5);
+        ctx.fillText(nd2.n, lx, ly+0.5);
       }
       ctx.globalAlpha=1;
     }
@@ -1662,7 +1668,7 @@ function makeGalaxy(cv, cfg){
     ctx.font='700 '+cfs+'px Inter, system-ui, sans-serif';
     ctx.textAlign='center'; ctx.textBaseline='middle';
     var ctw=ctx.measureText(cfg.core.label).width, cpw=ctw+18, cph=cfs+11;
-    var cly=core.y+cw/2+cph/2+10;
+    var cly=core.y-cw/2-cph/2-10;   /* arriba: por delante siempre pasa un nodo */
     ctx.fillStyle='rgba(10,16,28,.78)';
     rrect(core.x-cpw/2,cly-cph/2,cpw,cph,cph/2); ctx.fill();
     ctx.fillStyle='#fff';
@@ -1696,29 +1702,43 @@ function makeGalaxy(cv, cfg){
    vacío se dibuja la baldosa con la inicial en el color de marca.
    Ideal: PNG cuadrado, fondo transparente, 128×128 o más.
    ═══════════════════════════════════════════════════════════════ */
-var RINGS=[{r:1.80,inc:0.00},{r:2.15,inc:0.44},{r:2.50,inc:-0.38}];
+var RINGS_HERO=[
+  {r:1.66,inc: 0.00},   /* ads y tienda */
+  {r:2.02,inc: 0.36},   /* canales      */
+  {r:2.38,inc:-0.30},   /* logística    */
+  {r:2.72,inc: 0.24}    /* logística    */
+];
+var RINGS_BRAIN=[{r:1.80,inc:0.00},{r:2.15,inc:0.44},{r:2.50,inc:-0.38}];
 
 makeGalaxy(document.getElementById('galaxy'),{
-  stars:1500, coreBottom:235, band:430, coreSize:0.10, spreadW:0.205, spreadH:0.52, tilt:0.36, tileSize:52,
+  stars:1500, coreBottom:258, band:470, coreSize:0.092, spreadW:0.183, spreadH:0.46, tilt:0.28, tileSize:46,
   core:{letter:'R', label:'Rentabilify', size:13, src:''},   /* → /assets/logo-icon.png */
-  rings:RINGS,
+  rings:RINGS_HERO,
   nodes:[
-    {n:'Meta Ads',      l:'M', c:'#4c9bff', ring:0, ph:0.00, src:''},  /* → /assets/meta.png       */
-    {n:'TikTok Ads',    l:'T', c:'#e8edf5', ring:0, ph:2.09, src:''},  /* → /assets/tiktokads.png  */
-    {n:'Shopify',       l:'S', c:'#a9dc6a', ring:0, ph:4.19, src:''},  /* → /assets/shopify.png    */
-    {n:'WhatsApp API',  l:'W', c:'#4ce08a', ring:1, ph:0.80, src:''},  /* → /assets/whatsapp.png   */
-    {n:'Instagram',     l:'I', c:'#c79bff', ring:1, ph:2.90, src:''},  /* → /assets/instagram.png  */
-    {n:'Google Sheets', l:'G', c:'#4bd48e', ring:1, ph:5.00, src:''},  /* → /assets/sheets.png     */
-    {n:'Shalom',        l:'S', c:'#f2705c', ring:2, ph:0.40, src:''},  /* → /assets/shalom.png     */
-    {n:'Olva',          l:'O', c:'#ffc861', ring:2, ph:2.49, src:''},  /* → /assets/olva.png       */
-    {n:'Fenix G',       l:'F', c:'#b79bff', ring:2, ph:4.58, src:''}   /* → /assets/fenixg.png     */
+    /* Publicidad y tienda */
+    {n:'Meta Ads',      l:'M',  c:'#4c9bff', ring:0, ph:0.00, src:''},  /* → /assets/meta.png       */
+    {n:'TikTok Ads',    l:'T',  c:'#e8edf5', ring:0, ph:2.09, src:''},  /* → /assets/tiktokads.png  */
+    {n:'Shopify',       l:'S',  c:'#a9dc6a', ring:0, ph:4.19, src:''},  /* → /assets/shopify.png    */
+    /* Canales */
+    {n:'WhatsApp API',  l:'W',  c:'#4ce08a', ring:1, ph:0.70, src:''},  /* → /assets/whatsapp.png   */
+    {n:'Instagram',     l:'I',  c:'#c79bff', ring:1, ph:2.79, src:''},  /* → /assets/instagram.png  */
+    {n:'Google Sheets', l:'G',  c:'#4bd48e', ring:1, ph:4.89, src:''},  /* → /assets/sheets.png     */
+    /* Logística */
+    {n:'Shalom',        l:'Sh', c:'#f2705c', ring:2, ph:0.30, src:''},  /* → /assets/shalom.png     */
+    {n:'Olva',          l:'O',  c:'#ffc861', ring:2, ph:1.87, src:''},  /* → /assets/olva.png       */
+    {n:'Fenix G',       l:'F',  c:'#b79bff', ring:2, ph:3.44, src:''},  /* → /assets/fenixg.png     */
+    {n:'Aliclik',       l:'A',  c:'#9d8dff', ring:2, ph:5.01, src:''},  /* → /assets/aliclik.png    */
+    {n:'Boxful',        l:'B',  c:'#5fc9f8', ring:3, ph:0.95, src:''},  /* → /assets/boxful.png     */
+    {n:'Mastershop',    l:'Ms', c:'#a78bfa', ring:3, ph:2.52, src:''},  /* → /assets/mastershop.png */
+    {n:'Swayp',         l:'Sw', c:'#2dd4bf', ring:3, ph:4.09, src:''},  /* → /assets/swayp.png      */
+    {n:'Eva Courier',   l:'Ev', c:'#38bdf8', ring:3, ph:5.66, src:''}   /* → /assets/eva-courier.png*/
   ]
 });
 
 makeGalaxy(document.getElementById('brainGalaxy'),{
   stars:1700, coreY:0.5, coreSize:0.115, spreadW:0.225, spreadH:0.52, tilt:0.42, tileSize:56,
   core:{letter:'R', label:'Bot Rentabilify', size:14, src:''},
-  rings:RINGS,
+  rings:RINGS_BRAIN,
   nodes:[
     {n:'Pedidos',         l:'P', c:'#ffb066', ring:0, ph:0.00, src:''},
     {n:'Cobertura COD',   l:'C', c:'#4ce08a', ring:0, ph:2.09, src:''},
