@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rentabilify — Rentabilidad real para tu negocio COD</title>
+<meta name="description" content="La plataforma que unifica pedidos, logística, marketing y equipo para negocios contra entrega en Latinoamérica. Conoce tu margen neto real, no el que te muestra Meta.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS DE MARCA  —  editar aquí cambia toda la página
+   ============================================================ */
+:root{
+  /* Colores */
+  --o:#FF6B1A;          /* naranja principal */
+  --os:#FF8C47;         /* naranja suave */
+  --te:#00C2B2;         /* teal */
+  --te2:#00E5D4;        /* teal claro */
+  --ye:#FFD166;         /* amarillo */
+  --pu:#A78BFA;         /* morado */
+  --n:#0D1B2A;          /* navy fondo */
+  --n2:#142233;         /* navy superficie */
+  --n3:#1A2D42;         /* navy elevado */
+  --n0:#080E18;         /* navy profundo */
+  --mu:#8A9BAD;         /* texto secundario */
+  --w:#FFFFFF;
+  --bd:rgba(255,107,26,0.18);
+  --bd2:rgba(255,255,255,0.06);
+
+  /* Tipografía */
+  --font:'Montserrat','Helvetica Neue',Arial,sans-serif;
+  --font-acc:'Playfair Display',Georgia,serif;
+
+  /* Layout */
+  --max:1180px;
+  --pad:24px;
+  --r:14px;      /* radio tarjetas */
+  --r-sm:9px;    /* radio botones */
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--n);color:var(--w);
+  font-family:var(--font);font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+::selection{background:var(--o);color:var(--w);}
+
+/* Halos de fondo */
+body::before,body::after{content:'';position:fixed;pointer-events:none;z-index:0;}
+body::before{top:-15%;right:-8%;width:700px;height:700px;background:radial-gradient(circle,rgba(255,107,26,0.14) 0%,transparent 65%);}
+body::after{bottom:-15%;left:-10%;width:600px;height:600px;background:radial-gradient(circle,rgba(0,194,178,0.08) 0%,transparent 65%);}
+
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad);position:relative;z-index:1;}
+section{position:relative;z-index:1;padding:96px 0;}
+
+/* Utilidades tipográficas */
+.eyebrow{
+  font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;
+  color:var(--o);margin-bottom:16px;display:block;
+}
+h1,h2,h3,h4{line-height:1.15;letter-spacing:-0.02em;font-weight:900;}
+h1{font-size:clamp(38px,6vw,66px);}
+h2{font-size:clamp(30px,4.2vw,46px);}
+h3{font-size:20px;font-weight:800;letter-spacing:-0.01em;}
+.lead{font-size:clamp(16px,2vw,19px);font-weight:300;color:var(--mu);line-height:1.7;}
+.acc{font-family:var(--font-acc);font-style:italic;font-weight:700;color:var(--o);}
+.sec-head{max-width:720px;margin-bottom:56px;}
+.sec-head.center{margin-left:auto;margin-right:auto;text-align:center;}
+
+/* Botones */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--font);font-size:14px;font-weight:700;
+  padding:14px 26px;border-radius:var(--r-sm);border:1px solid transparent;
+  cursor:pointer;transition:transform .18s ease,opacity .18s ease,background .18s ease;
+  white-space:nowrap;
+}
+.btn:hover{transform:translateY(-2px);}
+.btn-p{background:var(--o);color:var(--w);box-shadow:0 8px 24px rgba(255,107,26,0.28);}
+.btn-p:hover{background:var(--os);}
+.btn-s{background:transparent;color:var(--w);border-color:rgba(255,255,255,0.18);}
+.btn-s:hover{border-color:var(--o);color:var(--os);}
+.btn-sm{padding:10px 18px;font-size:13px;}
+
+/* Tarjeta base */
+.card{
+  background:var(--n2);border:1px solid var(--bd2);border-radius:var(--r);
+  padding:28px;transition:border-color .2s ease,transform .2s ease,background .2s ease;
+}
+.card:hover{border-color:var(--bd);transform:translateY(-3px);background:var(--n3);}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(13,27,42,0.88);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--bd2);
+}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:70px;}
+.logo{font-size:21px;font-weight:800;letter-spacing:-0.03em;}
+.logo span{color:var(--o);}
+.nav-links{display:flex;gap:32px;align-items:center;}
+.nav-links a{font-size:14px;font-weight:500;color:var(--mu);transition:color .18s;}
+.nav-links a:hover{color:var(--w);}
+.nav-cta{display:flex;gap:12px;align-items:center;}
+.nav-cta .login{font-size:14px;font-weight:600;color:var(--mu);}
+.nav-cta .login:hover{color:var(--w);}
+.burger{display:none;background:none;border:none;color:var(--w);font-size:24px;cursor:pointer;padding:4px 8px;}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{padding:88px 0 72px;}
+.hero-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:64px;align-items:center;}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:700;letter-spacing:0.5px;
+  background:rgba(0,194,178,0.1);color:var(--te2);
+  border:1px solid rgba(0,194,178,0.25);border-radius:100px;
+  padding:6px 14px;margin-bottom:24px;
+}
+.pill .dot{width:6px;height:6px;border-radius:50%;background:var(--te2);}
+.hero h1{margin-bottom:22px;}
+.hero .lead{max-width:520px;margin-bottom:34px;}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px;}
+.hero-note{font-size:13px;color:var(--mu);font-weight:300;}
+.hero-note b{color:var(--w);font-weight:600;}
+
+/* Mockup dashboard */
+.mock{
+  background:linear-gradient(160deg,var(--n2) 0%,var(--n0) 100%);
+  border:1px solid var(--bd);border-radius:18px;overflow:hidden;
+  box-shadow:0 30px 70px rgba(0,0,0,0.45);
+}
+.mock-bar{
+  display:flex;align-items:center;gap:7px;
+  padding:12px 16px;border-bottom:1px solid var(--bd2);background:rgba(13,27,42,0.6);
+}
+.mock-bar i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.14);}
+.mock-bar .t{margin-left:10px;font-size:11px;color:var(--mu);letter-spacing:1px;font-weight:600;}
+.mock-body{padding:22px;}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px;}
+.kpi{background:rgba(255,255,255,0.03);border:1px solid var(--bd2);border-radius:11px;padding:14px;}
+.kpi .l{font-size:9px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--mu);display:block;margin-bottom:6px;}
+.kpi .v{font-size:27px;font-weight:900;letter-spacing:-0.03em;display:block;}
+.kpi .d{font-size:11px;font-weight:600;margin-top:3px;display:block;}
+.up{color:var(--te2);}.down{color:#FF7B7B;}
+.mock-row{display:flex;align-items:flex-end;gap:6px;height:76px;padding:0 2px;margin-bottom:14px;}
+.mock-row i{flex:1;background:linear-gradient(180deg,var(--o) 0%,rgba(255,107,26,0.25) 100%);border-radius:3px 3px 0 0;}
+.mock-foot{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--bd2);}
+.mock-foot span{font-size:11px;color:var(--mu);font-weight:500;}
+.mock-foot b{font-size:11px;color:var(--te2);font-weight:700;}
+
+/* ============================================================
+   BARRA DE INTEGRACIONES
+   ============================================================ */
+.trust{padding:36px 0;border-top:1px solid var(--bd2);border-bottom:1px solid var(--bd2);}
+.trust p{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--mu);text-align:center;margin-bottom:22px;}
+.trust-row{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 30px;}
+.trust-row span{font-size:15px;font-weight:700;color:rgba(255,255,255,0.42);letter-spacing:-0.01em;transition:color .2s;}
+.trust-row span:hover{color:var(--w);}
+
+/* ============================================================
+   PROBLEMA / ROAS
+   ============================================================ */
+.roas{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:760px;margin:0 auto 34px;}
+.roas-c{border-radius:var(--r);padding:34px 28px;text-align:center;border:1px solid var(--bd2);background:var(--n2);}
+.roas-c .l{font-size:11px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu);display:block;margin-bottom:12px;}
+.roas-c .n{font-size:64px;font-weight:900;letter-spacing:-0.04em;line-height:1;display:block;}
+.roas-c .s{font-size:13px;color:var(--mu);font-weight:300;margin-top:10px;display:block;}
+.roas-c.fake .n{color:rgba(255,255,255,0.30);}
+.roas-c.real{border-color:var(--bd);background:linear-gradient(160deg,rgba(255,107,26,0.10),var(--n2));}
+.roas-c.real .n{color:var(--o);}
+.roas-diff{text-align:center;font-size:15px;color:var(--mu);font-weight:300;max-width:620px;margin:0 auto;}
+.roas-diff b{color:var(--w);font-weight:700;}
+
+/* ============================================================
+   FEATURES
+   ============================================================ */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+.f-ico{
+  width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:18px;
+  background:rgba(255,107,26,0.10);border:1px solid rgba(255,107,26,0.22);
+}
+.f-ico.te{background:rgba(0,194,178,0.10);border-color:rgba(0,194,178,0.22);}
+.f-ico.ye{background:rgba(255,209,102,0.10);border-color:rgba(255,209,102,0.22);}
+.f-ico.pu{background:rgba(167,139,250,0.10);border-color:rgba(167,139,250,0.22);}
+.card h3{margin-bottom:10px;}
+.card p{font-size:14.5px;font-weight:300;color:var(--mu);line-height:1.7;}
+
+/* ============================================================
+   FLUJO
+   ============================================================ */
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+.step{position:relative;padding:26px 20px;background:var(--n2);border:1px solid var(--bd2);border-radius:var(--r);}
+.step .num{
+  font-size:11px;font-weight:900;letter-spacing:2px;color:var(--o);
+  display:block;margin-bottom:12px;
+}
+.step h4{font-size:15px;font-weight:800;margin-bottom:8px;}
+.step p{font-size:13px;font-weight:300;color:var(--mu);line-height:1.6;}
+.step::after{
+  content:'';position:absolute;top:34px;right:-8px;width:16px;height:1px;
+  background:linear-gradient(90deg,var(--bd),transparent);
+}
+.step:last-child::after{display:none;}
+
+/* ============================================================
+   PAÍSES
+   ============================================================ */
+.countries{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:32px;}
+.country{
+  font-size:14px;font-weight:600;padding:10px 20px;border-radius:100px;
+  background:var(--n2);border:1px solid var(--bd2);transition:all .2s;
+}
+.country:hover{border-color:var(--bd);color:var(--os);}
+
+/* ============================================================
+   TESTIMONIOS
+   ============================================================ */
+.quote{background:var(--n2);border:1px solid var(--bd2);border-radius:var(--r);padding:30px;}
+.quote p{font-size:16px;font-weight:400;line-height:1.75;margin-bottom:22px;}
+.quote .who{display:flex;align-items:center;gap:12px;}
+.quote .av{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--o),var(--os));
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;
+}
+.quote .who b{font-size:14px;font-weight:700;display:block;}
+.quote .who span{font-size:12px;color:var(--mu);font-weight:400;}
+
+/* ============================================================
+   PRECIOS
+   ============================================================ */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:start;}
+.plan{background:var(--n2);border:1px solid var(--bd2);border-radius:var(--r);padding:32px 28px;position:relative;}
+.plan.hot{border-color:var(--o);background:linear-gradient(170deg,rgba(255,107,26,0.08),var(--n2));box-shadow:0 20px 50px rgba(255,107,26,0.10);}
+.plan-tag{
+  position:absolute;top:-11px;left:28px;
+  font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  background:var(--o);color:var(--w);padding:4px 12px;border-radius:100px;
+}
+.plan h3{font-size:17px;margin-bottom:6px;}
+.plan .desc{font-size:13px;color:var(--mu);font-weight:300;margin-bottom:22px;min-height:38px;}
+.plan .price{display:flex;align-items:baseline;gap:6px;margin-bottom:4px;}
+.plan .price .amt{font-size:44px;font-weight:900;letter-spacing:-0.04em;}
+.plan .price .per{font-size:14px;color:var(--mu);font-weight:400;}
+.plan .bill{font-size:12px;color:var(--mu);font-weight:300;margin-bottom:24px;}
+.plan .btn{width:100%;margin-bottom:24px;}
+.plan ul{list-style:none;display:flex;flex-direction:column;gap:11px;}
+.plan li{font-size:14px;font-weight:300;color:var(--mu);display:flex;gap:10px;line-height:1.5;}
+.plan li::before{content:'✓';color:var(--te2);font-weight:900;flex-shrink:0;font-size:13px;}
+.plan li b{color:var(--w);font-weight:600;}
+
+/* ============================================================
+   FAQ
+   ============================================================ */
+.faq{max-width:800px;margin:0 auto;}
+.faq details{border-bottom:1px solid var(--bd2);padding:22px 0;}
+.faq summary{
+  font-size:17px;font-weight:700;cursor:pointer;list-style:none;
+  display:flex;justify-content:space-between;align-items:center;gap:20px;
+}
+.faq summary::-webkit-details-marker{display:none;}
+.faq summary::after{content:'+';color:var(--o);font-size:24px;font-weight:400;flex-shrink:0;transition:transform .2s;}
+.faq details[open] summary::after{transform:rotate(45deg);}
+.faq p{font-size:15px;font-weight:300;color:var(--mu);line-height:1.75;margin-top:14px;max-width:92%;}
+
+/* ============================================================
+   CTA FINAL
+   ============================================================ */
+.cta-final{
+  text-align:center;border-radius:22px;padding:72px 40px;
+  background:linear-gradient(150deg,rgba(255,107,26,0.14) 0%,var(--n2) 55%,rgba(0,194,178,0.08) 100%);
+  border:1px solid var(--bd);
+}
+.cta-final h2{margin-bottom:18px;}
+.cta-final .lead{max-width:560px;margin:0 auto 32px;}
+.cta-final .hero-actions{justify-content:center;}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.foot{border-top:1px solid var(--bd2);padding:56px 0 32px;}
+.foot-grid{display:grid;grid-template-columns:1.6fr repeat(3,1fr);gap:40px;margin-bottom:44px;}
+.foot-brand p{font-size:13.5px;font-weight:300;color:var(--mu);line-height:1.7;margin-top:14px;max-width:280px;}
+.foot h5{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--w);margin-bottom:16px;}
+.foot ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.foot li a{font-size:14px;font-weight:300;color:var(--mu);transition:color .18s;}
+.foot li a:hover{color:var(--o);}
+.foot-bot{
+  display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+  padding-top:26px;border-top:1px solid var(--bd2);
+  font-size:12.5px;color:var(--mu);font-weight:300;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:960px){
+  section{padding:68px 0;}
+  .hero-grid{grid-template-columns:1fr;gap:44px;}
+  .hero{padding:56px 0 44px;}
+  .grid-3,.plans{grid-template-columns:1fr;}
+  .flow{grid-template-columns:repeat(2,1fr);}
+  .step::after{display:none;}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:32px;}
+  .nav-links{
+    display:none;position:absolute;top:70px;left:0;right:0;
+    flex-direction:column;gap:0;align-items:stretch;
+    background:var(--n2);border-bottom:1px solid var(--bd);padding:8px 0;
+  }
+  .nav-links.open{display:flex;}
+  .nav-links a{padding:14px var(--pad);border-bottom:1px solid var(--bd2);}
+  .burger{display:block;}
+  .nav-cta .login{display:none;}
+}
+@media(max-width:600px){
+  :root{--pad:18px;}
+  .grid-2,.roas,.flow,.kpis{grid-template-columns:1fr;}
+  .roas-c .n{font-size:50px;}
+  .cta-final{padding:48px 24px;}
+  .foot-grid{grid-template-columns:1fr;}
+  .btn{width:100%;}
+  .hero-actions{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAV
+     ============================================================ -->
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a href="#" class="logo">Rentabili<span>fy</span></a>
+    <div class="nav-links" id="navLinks">
+      <a href="#producto">Producto</a>
+      <a href="#flujo">Cómo funciona</a>
+      <a href="#integraciones">Integraciones</a>
+      <a href="#precios">Precios</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#" class="login">Iniciar sesión</a>
+      <a href="#precios" class="btn btn-p btn-sm">Prueba gratis</a>
+      <button class="burger" id="burger" aria-label="Menú">☰</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill"><span class="dot"></span>Hecho para negocios COD en Latinoamérica</span>
+      <h1>Deja de adivinar.<br>Empieza a <span class="acc">saber</span> cuánto ganas.</h1>
+      <p class="lead">
+        Rentabilify unifica pedidos, logística, marketing y equipo en una sola plataforma —
+        y te muestra tu margen neto real, con rechazos, envíos y devoluciones incluidos.
+      </p>
+      <div class="hero-actions">
+        <a href="#precios" class="btn btn-p">Empieza gratis</a>
+        <a href="#producto" class="btn btn-s">Ver la plataforma</a>
+      </div>
+      <p class="hero-note">Sin tarjeta de crédito · <b>14 días</b> de prueba · Configúralo en minutos</p>
+    </div>
+
+    <!-- Mockup del dashboard -->
+    <div class="mock">
+      <div class="mock-bar">
+        <i></i><i></i><i></i>
+        <span class="t">DASHBOARD · HOY</span>
+      </div>
+      <div class="mock-body">
+        <div class="kpis">
+          <div class="kpi">
+            <span class="l">Margen neto</span>
+            <span class="v">12.4%</span>
+            <span class="d up">↑ 2.1 pts vs. ayer</span>
+          </div>
+          <div class="kpi">
+            <span class="l">Pedidos hoy</span>
+            <span class="v">47</span>
+            <span class="d up">↑ 9 vs. ayer</span>
+          </div>
+          <div class="kpi">
+            <span class="l">Tasa de entrega</span>
+            <span class="v">74%</span>
+            <span class="d down">↓ 3% vs. semana</span>
+          </div>
+          <div class="kpi">
+            <span class="l">ROAS real</span>
+            <span class="v" style="color:var(--o)">3.2×</span>
+            <span class="d up">Meta reporta 5.0×</span>
+          </div>
+        </div>
+        <div class="mock-row">
+          <i style="height:38%"></i><i style="height:56%"></i><i style="height:44%"></i>
+          <i style="height:72%"></i><i style="height:61%"></i><i style="height:88%"></i>
+          <i style="height:79%"></i><i style="height:96%"></i>
+        </div>
+        <div class="mock-foot">
+          <span>Ganancia neta · últimos 8 días</span>
+          <b>● En tiempo real</b>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     BARRA DE INTEGRACIONES
+     ============================================================ -->
+<div class="trust">
+  <div class="wrap">
+    <p>Conectado con las herramientas que ya usas</p>
+    <div class="trust-row">
+      <span>Meta Ads</span><span>TikTok Ads</span><span>Shopify</span>
+      <span>Shalom Pro</span><span>Aliclik</span><span>Fenix G</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PROBLEMA · ROAS REAL
+     ============================================================ -->
+<section id="problema">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow">El problema</span>
+      <h2>Meta dice 5×.<br>La realidad dice otra cosa.</h2>
+    </div>
+
+    <div class="roas">
+      <div class="roas-c fake">
+        <span class="l">Meta dice</span>
+        <span class="n">5.0×</span>
+        <span class="s">ROAS de plataforma</span>
+      </div>
+      <div class="roas-c real">
+        <span class="l">Tu ROAS real</span>
+        <span class="n">2.3×</span>
+        <span class="s">Con costos reales incluidos</span>
+      </div>
+    </div>
+
+    <p class="roas-diff">
+      La diferencia son los <b>rechazos</b>, las <b>devoluciones</b> y la <b>logística</b> que ninguna
+      plataforma de ads descuenta. En COD el margen promedio en Latam es de <b>8%</b>:
+      un punto mal medido es la diferencia entre escalar y quebrar.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     PRODUCTO · MÓDULOS
+     ============================================================ -->
+<section id="producto">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow">La plataforma</span>
+      <h2>Todo tu negocio en un solo lugar</h2>
+      <p class="lead" style="margin-top:16px">
+        ¿Cuántas apps abres para procesar un solo pedido? Rentabilify reemplaza el Excel,
+        el WhatsApp suelto y las cinco pestañas abiertas.
+      </p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="f-ico">📊</div>
+        <h3>Rentabilidad en tiempo real</h3>
+        <p>Margen neto, ganancia real y break-even calculados con tus costos completos: producto, envío, rechazo, ads y costos fijos.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico te">📦</div>
+        <h3>Gestión de pedidos</h3>
+        <p>De lead a entregado sin perder nada. Confirmación, rótulos, estados y seguimiento en un flujo único para todo tu equipo.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico ye">🚚</div>
+        <h3>Logística y tracking</h3>
+        <p>Genera guías desde la plataforma, sigue cada envío automáticamente y mide la efectividad real de cada agencia de reparto.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico pu">🎯</div>
+        <h3>Marketing con ROAS real</h3>
+        <p>Sincroniza tus campañas de Meta y TikTok y compara el ROAS de plataforma contra tu ROAS real, con costos de entrega incluidos.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico">👥</div>
+        <h3>Equipo y comisiones</h3>
+        <p>Esquema híbrido automático: sueldo fijo + comisión por confirmación + comisión por entrega. Sin planillas ni cálculos a mano.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico te">🔢</div>
+        <h3>Calculadora de break-even</h3>
+        <p>Ingresa costos fijos, precio y costo variable. Te decimos cuántos pedidos necesitas para ganar, ajustado a tu tasa de rechazo real.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FLUJO · CÓMO FUNCIONA
+     ============================================================ -->
+<section id="flujo" style="background:rgba(255,255,255,0.015)">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow">Cómo funciona</span>
+      <h2>De lead a entregado — sin perder nada</h2>
+    </div>
+
+    <div class="flow">
+      <div class="step">
+        <span class="num">01</span>
+        <h4>Llega el lead</h4>
+        <p>Entra solo desde Shopify, tu landing o tus formularios. Sin copiar y pegar.</p>
+      </div>
+      <div class="step">
+        <span class="num">02</span>
+        <h4>Se confirma</h4>
+        <p>Tu asesor confirma con el cliente y el pedido cambia de estado en tiempo real.</p>
+      </div>
+      <div class="step">
+        <span class="num">03</span>
+        <h4>Se genera el rótulo</h4>
+        <p>Guía creada desde Rentabilify con la agencia que elijas. Un clic.</p>
+      </div>
+      <div class="step">
+        <span class="num">04</span>
+        <h4>Tracking automático</h4>
+        <p>Cada envío se actualiza solo en el dashboard. Sabes dónde está todo.</p>
+      </div>
+      <div class="step">
+        <span class="num">05</span>
+        <h4>Entregado y cobrado</h4>
+        <p>Se registra el cobro y tu margen neto se recalcula al instante.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     INTEGRACIONES
+     ============================================================ -->
+<section id="integraciones">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow">Integraciones</span>
+      <h2>Conecta y deja de copiar y pegar</h2>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="f-ico" style="background:rgba(24,119,242,0.12);border-color:rgba(24,119,242,0.3)">📘</div>
+        <h3>Meta Ads</h3>
+        <p>Sincronización automática de campañas y ROAS real con costos de entrega, rechazos y logística descontados.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.14)">🎵</div>
+        <h3>TikTok Ads</h3>
+        <p>Tus campañas de TikTok junto a las de Meta, comparadas con la misma métrica real de rentabilidad.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico" style="background:rgba(150,191,72,0.12);border-color:rgba(150,191,72,0.3)">🛒</div>
+        <h3>Shopify</h3>
+        <p>Los pedidos de tu tienda llegan solos, con productos e inventario sincronizados. Cero errores manuales.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico ye">📮</div>
+        <h3>Shalom Pro</h3>
+        <p>Integración oficial: genera envíos y sigue el estado sin salir de Rentabilify.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico pu">⚡</div>
+        <h3>Aliclik</h3>
+        <p>Conecta tu operación de dropshipping y trae pedidos y estados automáticamente.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico te">🦅</div>
+        <h3>Fenix G</h3>
+        <p>Crea guías, recibe tracking automático y mide los KPIs de efectividad de la agencia.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     MULTI-PAÍS
+     ============================================================ -->
+<section style="background:rgba(255,255,255,0.015)">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow">Cobertura</span>
+      <h2>Multi-país. Multi-tienda.<br>Una sola plataforma.</h2>
+      <p class="lead" style="margin-top:16px">
+        Moneda, impuestos y tasas configurables por país. Rentabilify entiende tu mercado.
+      </p>
+    </div>
+    <div class="countries">
+      <span class="country">🇵🇪 Perú</span>
+      <span class="country">🇨🇴 Colombia</span>
+      <span class="country">🇲🇽 México</span>
+      <span class="country">🇨🇱 Chile</span>
+      <span class="country">🇪🇨 Ecuador</span>
+      <span class="country">🇬🇹 Guatemala</span>
+      <span class="country">🇭🇳 Honduras</span>
+      <span class="country">🇸🇻 El Salvador</span>
+      <span class="country">🇨🇷 Costa Rica</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TESTIMONIOS
+     ⚠️ PLACEHOLDER — reemplazar con testimonios reales y con permiso
+     ============================================================ -->
+<section id="testimonios">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow">Testimonios</span>
+      <h2>Lo que dicen quienes ya dejaron el Excel</h2>
+    </div>
+
+    <div class="grid-3">
+      <div class="quote">
+        <p>“[Testimonio real pendiente — describe el antes y el después en una o dos frases, con un número concreto.]”</p>
+        <div class="who">
+          <div class="av">?</div>
+          <div><b>Nombre Apellido</b><span>Cargo · Empresa · País</span></div>
+        </div>
+      </div>
+      <div class="quote">
+        <p>“[Testimonio real pendiente — enfocado en una métrica: margen, tasa de entrega o tiempo ahorrado.]”</p>
+        <div class="who">
+          <div class="av">?</div>
+          <div><b>Nombre Apellido</b><span>Cargo · Empresa · País</span></div>
+        </div>
+      </div>
+      <div class="quote">
+        <p>“[Testimonio real pendiente — enfocado en el equipo, las comisiones o la logística.]”</p>
+        <div class="who">
+          <div class="av">?</div>
+          <div><b>Nombre Apellido</b><span>Cargo · Empresa · País</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PRECIOS
+     ⚠️ PLACEHOLDER — montos y límites por confirmar
+     ============================================================ -->
+<section id="precios">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow">Precios</span>
+      <h2>Un plan para cada etapa</h2>
+      <p class="lead" style="margin-top:16px">14 días de prueba en todos los planes. Sin tarjeta de crédito.</p>
+    </div>
+
+    <div class="plans">
+      <div class="plan">
+        <h3>Starter</h3>
+        <p class="desc">Para el negocio que está validando y necesita ver sus números claros.</p>
+        <div class="price"><span class="amt">$XX</span><span class="per">/ mes</span></div>
+        <p class="bill">Facturado mensualmente</p>
+        <a href="#" class="btn btn-s">Empezar gratis</a>
+        <ul>
+          <li>Hasta <b>XXX pedidos</b>/mes</li>
+          <li><b>1 tienda</b>, 1 país</li>
+          <li>Dashboard de rentabilidad</li>
+          <li>Gestión de pedidos y estados</li>
+          <li>Calculadora de break-even</li>
+          <li>Soporte por correo</li>
+        </ul>
+      </div>
+
+      <div class="plan hot">
+        <span class="plan-tag">Más elegido</span>
+        <h3>Growth</h3>
+        <p class="desc">Para el negocio que ya escala con ads y necesita ROAS real.</p>
+        <div class="price"><span class="amt">$XX</span><span class="per">/ mes</span></div>
+        <p class="bill">Facturado mensualmente</p>
+        <a href="#" class="btn btn-p">Empezar gratis</a>
+        <ul>
+          <li>Hasta <b>X.XXX pedidos</b>/mes</li>
+          <li><b>Multi-tienda</b> y multi-país</li>
+          <li>Todo lo de Starter, más:</li>
+          <li>Integraciones <b>Meta y TikTok Ads</b></li>
+          <li>Integraciones de logística</li>
+          <li>Equipo y comisiones automáticas</li>
+          <li>Soporte prioritario</li>
+        </ul>
+      </div>
+
+      <div class="plan">
+        <h3>Agencia</h3>
+        <p class="desc">Para agencias y operaciones que gestionan varias marcas a la vez.</p>
+        <div class="price"><span class="amt">A medida</span></div>
+        <p class="bill">Hablemos de tu operación</p>
+        <a href="#" class="btn btn-s">Agendar demo</a>
+        <ul>
+          <li><b>Pedidos ilimitados</b></li>
+          <li>Gestión <b>multi-cliente</b> con KPIs</li>
+          <li>Todo lo de Growth, más:</li>
+          <li>Roles y permisos avanzados</li>
+          <li>Onboarding acompañado</li>
+          <li>Gestor de cuenta dedicado</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FAQ
+     ============================================================ -->
+<section id="faq" style="background:rgba(255,255,255,0.015)">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow">Preguntas frecuentes</span>
+      <h2>Lo que suelen preguntarnos</h2>
+    </div>
+
+    <div class="faq">
+      <details open>
+        <summary>¿Qué es exactamente el “ROAS real”?</summary>
+        <p>Es tu retorno de inversión publicitaria después de descontar todo lo que Meta o TikTok no ven: pedidos rechazados, envíos de ida y vuelta, costo del producto, comisiones del equipo y costos fijos. Por eso una campaña que la plataforma reporta en 5× puede estar realmente en 2.3×.</p>
+      </details>
+      <details>
+        <summary>¿Sirve si vendo en más de un país o con más de una tienda?</summary>
+        <p>Sí. Rentabilify es multi-país y multi-tienda desde el inicio: configuras moneda, costos de envío y tasa de rechazo por cada mercado, y ves cada operación por separado o todas juntas.</p>
+      </details>
+      <details>
+        <summary>¿Cuánto tarda la configuración?</summary>
+        <p>Conectar tu tienda y tus cuentas de ads toma minutos. Cargar tus costos de producto, envío y costos fijos es lo que define la precisión de tu margen — y es un paso guiado dentro de la plataforma.</p>
+      </details>
+      <details>
+        <summary>¿Puedo seguir usando mi agencia de envíos actual?</summary>
+        <p>Sí. Tenemos integraciones oficiales con Shalom Pro, Aliclik y Fenix G para generar guías y traer tracking automático. Si tu agencia no está integrada, puedes registrar los envíos manualmente sin perder ninguna métrica.</p>
+      </details>
+      <details>
+        <summary>¿Cómo se calculan las comisiones del equipo?</summary>
+        <p>Con un esquema híbrido configurable: sueldo fijo, comisión por pedido confirmado y comisión por pedido entregado. Rentabilify lo calcula automáticamente sobre los pedidos reales, sin planillas.</p>
+      </details>
+      <details>
+        <summary>¿Necesito tarjeta de crédito para probarlo?</summary>
+        <p>No. La prueba de 14 días no pide tarjeta. Si al terminar no eliges un plan, tu cuenta simplemente pasa a modo de solo lectura y tus datos quedan guardados.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CTA FINAL
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <div class="cta-final">
+      <span class="eyebrow">Empieza hoy</span>
+      <h2>Tu margen real, en tu primer día</h2>
+      <p class="lead">
+        Conecta tu tienda, carga tus costos y descubre cuánto ganas de verdad en cada pedido.
+        Sin Excel. Sin adivinanzas.
+      </p>
+      <div class="hero-actions">
+        <a href="#" class="btn btn-p">Crear mi cuenta gratis</a>
+        <a href="#" class="btn btn-s">Agendar una demo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#" class="logo">Rentabili<span>fy</span></a>
+        <p>La plataforma de rentabilidad para negocios contra entrega en Latinoamérica.</p>
+      </div>
+      <div>
+        <h5>Producto</h5>
+        <ul>
+          <li><a href="#producto">Funcionalidades</a></li>
+          <li><a href="#integraciones">Integraciones</a></li>
+          <li><a href="#precios">Precios</a></li>
+          <li><a href="#flujo">Cómo funciona</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Recursos</h5>
+        <ul>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Calculadora de break-even</a></li>
+          <li><a href="#faq">Preguntas frecuentes</a></li>
+          <li><a href="#">Centro de ayuda</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Empresa</h5>
+        <ul>
+          <li><a href="#">Contacto</a></li>
+          <li><a href="#">Términos y condiciones</a></li>
+          <li><a href="#">Política de privacidad</a></li>
+          <li><a href="#">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 Rentabilify. Todos los derechos reservados.</span>
+      <span>rentabilify.app</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Menú móvil
+document.getElementById('burger').addEventListener('click', function(){
+  document.getElementById('navLinks').classList.toggle('open');
+});
+document.querySelectorAll('#navLinks a').forEach(function(a){
+  a.addEventListener('click', function(){
+    document.getElementById('navLinks').classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>
